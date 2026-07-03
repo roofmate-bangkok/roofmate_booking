@@ -117,7 +117,7 @@
     .panel {
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 34px;
-      padding: 14px 14px 10px;
+      padding: 14px 14px 22px;
       background: rgba(255,255,255,.055);
       box-shadow: var(--shadow);
     }
@@ -316,6 +316,13 @@
       font-size: 16px;
       letter-spacing: .1em;
       text-transform: uppercase;
+    }
+
+    .agree-thai {
+      display: block;
+      white-space: nowrap;
+      font-size: 14px;
+      line-height: 1.35;
     }
 
     .submit-btn {
@@ -517,9 +524,12 @@
       .contact { gap: 10px; }
       .contact a { min-height: 44px; font-size: 12px; padding: 0 10px; }
       .ig-icon, .map-icon { width: 20px; height: 20px; }
-      .panel { padding-bottom: 8px; }
+      .panel { padding-bottom: 24px; }
       .submit-btn { margin-top: 0; }
       .status:empty { display: none; }
+      .agree { grid-template-columns: 46px 1fr; gap: 14px; }
+      .agree strong { font-size: 14px; letter-spacing: .08em; }
+      .agree-thai { font-size: 12px; line-height: 1.25; }
     }
   </style>
 </head>
@@ -597,7 +607,7 @@
           </ol>
           <label class="agree">
             <input id="agree" type="checkbox" required />
-            <span><strong>Understood and agreed!</strong>รับทราบเงื่อนไขและยืนยันการจอง</span>
+            <span><strong>Understood and agreed!</strong><span class="agree-thai">รับทราบเงื่อนไขและยืนยันการจอง</span></span>
           </label>
         </section>
 
