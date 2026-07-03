@@ -516,7 +516,7 @@
 
     <div class="line-status" id="lineStatus">
       <span class="dot"></span>
-      <span>Status LINE: <strong id="lineStatusText">not connected</strong></span>
+      <span>LINE: <strong id="lineStatusText">disconnected</strong></span>
     </div>
 
     <section class="panel" id="bookPanel">
@@ -729,7 +729,7 @@
 
     function setLineStatus(connected) {
       $("lineStatus").classList.toggle("connected", connected);
-      $("lineStatusText").textContent = connected ? "connected" : "not connected";
+      $("lineStatusText").textContent = connected ? "connected" : "disconnected";
     }
 
     function validateSelectedDate() {
