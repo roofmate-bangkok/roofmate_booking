@@ -4,33 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Roofmate Booking</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
-      --bg: #09090a;
-      --panel: rgba(18, 18, 20, .78);
-      --panel-2: rgba(255, 255, 255, .055);
-      --line: rgba(255, 255, 255, .13);
-      --text: #f6f2ea;
-      --muted: rgba(246, 242, 234, .68);
-      --soft: rgba(246, 242, 234, .1);
-      --brand: #b8161e;
-      --brand-2: #e13a42;
-      --ok: #67d18c;
-      --warn: #f0bd5b;
-      --danger: #ff6b6b;
-      --radius: 18px;
-      --shadow: 0 24px 70px rgba(0, 0, 0, .38);
+      --red: #B8161E;
+      --red-2: #ee3a45;
+      --red-3: #7e1016;
+      --black: #050505;
+      --ink: #0a0a0a;
+      --panel: rgba(31, 7, 9, .78);
+      --panel-2: rgba(0, 0, 0, .62);
+      --line: rgba(255, 255, 255, .16);
+      --white: #fff7f2;
+      --muted: rgba(255, 247, 242, .72);
+      --ok: #52d273;
+      --danger: #ffb0b0;
+      --radius: 28px;
+      --shadow: 0 28px 76px rgba(0, 0, 0, .34);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; min-height: 100%; }
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
+      color: var(--white);
       background:
-        radial-gradient(circle at 15% 2%, rgba(184, 22, 30, .36), transparent 24%),
-        radial-gradient(circle at 80% 0%, rgba(255, 255, 255, .08), transparent 20%),
-        linear-gradient(160deg, #101013 0%, #09090a 48%, #170709 100%);
+        radial-gradient(circle at 18% 8%, rgba(255, 255, 255, .16), transparent 22%),
+        linear-gradient(180deg, var(--red) 0%, #b3121b 38%, #5c080d 72%, var(--black) 100%);
       padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     }
 
@@ -38,202 +38,262 @@
     button { cursor: pointer; }
 
     .page {
-      width: min(760px, 100%);
+      width: min(720px, 100%);
       margin: 0 auto;
-      padding: 18px 14px 42px;
+      padding: 0 16px 34px;
     }
 
-    .hero {
-      min-height: 210px;
+    .brand-hero {
+      aspect-ratio: 4 / 3;
       display: grid;
-      align-content: end;
+      place-items: center;
+      text-align: center;
+      color: var(--ink);
+      padding: 24px 10px;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: clamp(38px, 13vw, 84px);
+      line-height: .9;
+      letter-spacing: -.055em;
+      font-weight: 950;
+    }
+
+    .brand-subtitle {
+      margin: 12px 0 0;
+      color: var(--ink);
+      font-size: clamp(15px, 4.4vw, 24px);
+      font-weight: 850;
+      letter-spacing: .03em;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 14px;
-      padding: 44px 6px 28px;
+      margin: 0 0 20px;
     }
 
-    .eyebrow {
-      color: var(--brand-2);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .18em;
+    .tab-btn {
+      min-height: 68px;
+      border: 1px solid rgba(255,255,255,.26);
+      border-radius: 999px;
+      background: rgba(0,0,0,.32);
+      color: var(--white);
+      font-size: 17px;
+      font-weight: 950;
+      letter-spacing: .2em;
       text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 34px rgba(0,0,0,.18);
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(42px, 12vw, 82px);
-      line-height: .86;
-      letter-spacing: -.03em;
-      text-transform: uppercase;
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(255, 190, 198, .96), var(--red-2));
+      border-color: rgba(255,255,255,.44);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 18px 36px rgba(0,0,0,.24);
     }
 
-    .subtitle {
-      max-width: 520px;
-      margin: 0;
+    .line-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 14px;
+      margin-bottom: 18px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.42);
       color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
+      font-size: 13px;
+      font-weight: 750;
     }
 
-    .card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.025)),
-        var(--panel);
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #777;
+    }
+    .line-status.connected .dot { background: var(--ok); }
+    .line-status.connected strong { color: var(--ok); }
+
+    .panel {
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 34px;
+      padding: 14px;
+      background: rgba(255,255,255,.055);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(18px) saturate(130%);
-      -webkit-backdrop-filter: blur(18px) saturate(130%);
-      overflow: hidden;
     }
 
     .form {
       display: grid;
-      gap: 1px;
-      background: var(--line);
+      gap: 18px;
     }
 
-    .section {
-      background: rgba(9, 9, 10, .72);
-      padding: 18px;
+    .field-card {
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), transparent),
+        rgba(35, 4, 7, .66);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 16px 28px rgba(0,0,0,.18);
+      padding: 26px 28px;
     }
 
-    .section-head {
+    .label {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
       gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .section-title {
-      font-size: 12px;
+      margin: 0 0 16px;
+      font-size: 18px;
       font-weight: 950;
-      letter-spacing: .13em;
+      letter-spacing: .18em;
       text-transform: uppercase;
     }
 
-    .section-note {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-      text-align: right;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .field {
-      display: grid;
-      gap: 7px;
-      margin-bottom: 10px;
-    }
-
-    .field:last-child { margin-bottom: 0; }
-    label {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 850;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+    .label .icon {
+      width: 26px;
+      text-align: center;
+      letter-spacing: 0;
     }
 
     input, select, textarea {
       width: 100%;
-      min-height: 48px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .06);
-      color: var(--text);
-      padding: 0 14px;
+      min-height: 62px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 22px;
+      background: rgba(4, 1, 2, .76);
+      color: var(--white);
+      padding: 0 22px;
       outline: none;
       color-scheme: dark;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,.42); }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255, 185, 192, .72);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, .08);
     }
 
     textarea {
-      min-height: 92px;
+      min-height: 150px;
+      padding: 18px 22px;
       resize: vertical;
-      padding: 13px 14px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(225, 58, 66, .82);
-      box-shadow: 0 0 0 3px rgba(184, 22, 30, .18);
-    }
-
-    .date-button {
-      width: 100%;
-      min-height: 54px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 0 14px;
-      text-align: left;
-      font-weight: 850;
-    }
-
-    .date-button span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 750;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      margin-bottom: 2px;
-    }
-
-    .chips, .time-grid {
+    .time-grid, .zone-grid {
       display: grid;
-      gap: 8px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
     }
 
-    .chips { grid-template-columns: repeat(3, 1fr); }
-    .time-grid { grid-template-columns: repeat(4, 1fr); }
+    .choice {
+      min-height: 66px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 24px;
+      background: rgba(4, 1, 2, .74);
+      color: var(--white);
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
 
-    .chip, .time-chip {
-      min-height: 42px;
-      border: 1px solid var(--line);
+    .choice.active {
+      border-color: rgba(255,255,255,.44);
+      background: linear-gradient(135deg, rgba(255, 190, 198, .98), var(--red-2));
+      box-shadow: 0 14px 28px rgba(0,0,0,.22);
+    }
+
+    .guest-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .guest-custom {
+      display: none;
+    }
+    .guest-custom.show { display: block; }
+
+    .note-list {
+      display: grid;
+      gap: 18px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .note-item {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .note-no {
+      width: 46px;
+      height: 46px;
       border-radius: 999px;
-      background: rgba(255,255,255,.055);
-      color: var(--text);
-      padding: 0 10px;
-      font-weight: 850;
-    }
-
-    .chip.active, .time-chip.active, .table-chip.active {
-      border-color: var(--brand);
-      background: linear-gradient(135deg, var(--brand), #7f0e14);
-      box-shadow: 0 10px 24px rgba(184, 22, 30, .26);
-    }
-
-    .zone-help {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .submit-bar {
       display: grid;
-      gap: 10px;
-      padding: 16px;
-      background: #0b0b0d;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(255,190,198,.98), var(--red-2));
+      font-weight: 950;
+    }
+
+    .note-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 17px;
+      line-height: 1.36;
+    }
+
+    .note-item span {
+      color: rgba(255,247,242,.86);
+      line-height: 1.55;
+    }
+
+    .agree {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      align-items: center;
+      gap: 18px;
+      margin-top: 24px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 30px;
+      background: rgba(4,1,2,.52);
+      cursor: pointer;
+    }
+
+    .agree input {
+      width: 46px;
+      height: 46px;
+      min-height: 46px;
+      accent-color: var(--red-2);
+    }
+
+    .agree strong {
+      display: block;
+      font-size: 16px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
     }
 
     .submit-btn {
-      min-height: 58px;
+      width: 100%;
+      min-height: 74px;
+      margin-top: 4px;
       border: 0;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #f3f0e8, #d7d1c4);
-      color: #101013;
-      font-size: 15px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 190, 198, .98), var(--red-2));
+      color: #fff;
+      font-size: 18px;
       font-weight: 950;
-      letter-spacing: .08em;
+      letter-spacing: .18em;
       text-transform: uppercase;
+      box-shadow: 0 22px 48px rgba(0,0,0,.28);
     }
 
     .submit-btn:disabled {
@@ -242,125 +302,29 @@
     }
 
     .status {
-      min-height: 22px;
+      min-height: 24px;
       color: var(--muted);
-      font-size: 12px;
+      text-align: center;
+      font-size: 13px;
       line-height: 1.45;
-      text-align: center;
     }
-
-    .status.error { color: var(--danger); }
     .status.ok { color: var(--ok); }
-
-    dialog {
-      width: min(440px, calc(100% - 26px));
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #111114;
-      color: var(--text);
-      padding: 0;
-    }
-
-    dialog::backdrop { background: rgba(0,0,0,.72); }
-    .modal { padding: 16px; }
-
-    .calendar-head {
-      display: grid;
-      grid-template-columns: 42px 1fr 42px;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .calendar-title {
-      text-align: center;
-      font-weight: 950;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .icon-btn {
-      width: 42px;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: var(--soft);
-      color: var(--text);
-      font-size: 22px;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-    }
-
-    .dow, .day {
-      min-height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-    }
-
-    .dow {
-      color: var(--muted);
-      font-size: 10px;
-      font-weight: 900;
-    }
-
-    .day {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      font-weight: 850;
-    }
-
-    .day.muted { opacity: .24; }
-    .day.today { border-color: var(--warn); }
-    .day.selected {
-      background: var(--text);
-      color: #0d0d0f;
-      border-color: var(--text);
-    }
-    .day.disabled {
-      opacity: .2;
-      cursor: not-allowed;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .ghost {
-      min-height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: transparent;
-      color: var(--text);
-      padding: 0 14px;
-      font-weight: 850;
-    }
+    .status.error { color: var(--danger); }
 
     .success {
       display: none;
+      margin-top: 18px;
+      border-radius: 30px;
+      background: rgba(0,0,0,.58);
       padding: 22px;
-      background: #0b0b0d;
-      border-top: 1px solid var(--line);
+      border: 1px solid rgba(255,255,255,.12);
     }
-
     .success.show { display: block; }
-    .success h2 {
-      margin: 0 0 12px;
-      font-size: 24px;
-      line-height: 1.1;
-    }
+    .success h2 { margin: 0 0 14px; }
 
     .summary {
       display: grid;
-      gap: 8px;
+      gap: 10px;
       margin: 0;
       padding: 0;
     }
@@ -368,99 +332,159 @@
     .summary div {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid rgba(255,255,255,.09);
-      padding: 9px 0;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
       color: var(--muted);
     }
+    .summary strong { color: var(--white); text-align: right; }
 
-    .summary strong { color: var(--text); text-align: right; }
+    .manage-panel {
+      display: none;
+      border-radius: 34px;
+      padding: 28px;
+      background: rgba(35, 4, 7, .66);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+    }
+    .manage-panel.show { display: block; }
+    .manage-panel h2 { margin: 0 0 12px; }
+    .manage-panel p { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
 
-    @media (max-width: 620px) {
-      .page { padding-left: 10px; padding-right: 10px; }
-      .hero { min-height: 185px; padding-top: 32px; }
-      .section { padding: 15px; }
-      .grid-2, .chips { grid-template-columns: 1fr; }
-      .time-grid { grid-template-columns: repeat(3, 1fr); }
-      .section-head { display: grid; }
-      .section-note { text-align: left; }
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin: 28px 0 18px;
+      padding-top: 26px;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+
+    .contact a {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 0 18px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .footer {
+      text-align: center;
+      color: rgba(255,247,242,.82);
+      font-weight: 750;
+      letter-spacing: .05em;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 520px) {
+      .page { padding-left: 12px; padding-right: 12px; }
+      .tabs { gap: 10px; }
+      .tab-btn { min-height: 60px; font-size: 14px; }
+      .field-card { padding: 22px 20px; border-radius: 26px; }
+      .label { font-size: 15px; letter-spacing: .16em; }
+      .time-grid, .zone-grid { gap: 10px; }
+      .choice { min-height: 58px; font-size: 15px; }
+      input, select { min-height: 58px; border-radius: 20px; }
+      .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
+      .note-no { width: 42px; height: 42px; }
     }
   </style>
 </head>
 <body>
   <main class="page">
-    <section class="hero">
-      <div class="eyebrow">Booking Request</div>
-      <h1>Roofmate</h1>
-      <p class="subtitle">จอง Roofmate ล่วงหน้า เลือกวัน เวลา และโซนที่ต้องการ แล้วระบบจะส่ง booking เข้า Staff App ทันที</p>
+    <section class="brand-hero">
+      <div>
+        <h1 class="brand-title">Roofmate</h1>
+        <p class="brand-subtitle">เพื่อนร่วมหลังคา</p>
+      </div>
     </section>
 
-    <section class="card">
+    <nav class="tabs" aria-label="Booking tabs">
+      <button class="tab-btn active" id="bookTab" type="button">Book</button>
+      <button class="tab-btn" id="manageTab" type="button">Manage</button>
+    </nav>
+
+    <div class="line-status" id="lineStatus">
+      <span class="dot"></span>
+      <span>Status LINE: <strong id="lineStatusText">not connected</strong></span>
+    </div>
+
+    <section class="panel" id="bookPanel">
       <form class="form" id="bookingForm" novalidate>
-        <section class="section">
-          <div class="section-head">
-            <div class="section-title">Your Detail</div>
-            <div class="section-note">ใช้สำหรับยืนยัน booking</div>
-          </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="name">Name</label>
-              <input id="name" name="name" autocomplete="name" required placeholder="Your name" />
-            </div>
-            <div class="field">
-              <label for="phone">Phone</label>
-              <input id="phone" name="phone" inputmode="tel" autocomplete="tel" required placeholder="08x xxx xxxx" />
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" autocomplete="email" placeholder="name@email.com" />
-            </div>
-            <div class="field">
-              <label for="guests">Guests</label>
-              <select id="guests" name="guests" required></select>
-            </div>
+        <section class="field-card">
+          <h2 class="label"><span class="icon">📅</span>Date *</h2>
+          <input id="date" name="date" type="date" required />
+        </section>
+
+        <section class="field-card">
+          <h2 class="label"><span class="icon">🕘</span>Time *</h2>
+          <div class="time-grid" id="timeGrid"></div>
+        </section>
+
+        <section class="field-card">
+          <h2 class="label"><span class="icon">👤</span>Name *</h2>
+          <input id="name" name="name" autocomplete="name" required placeholder="ชื่อผู้จอง" />
+        </section>
+
+        <section class="field-card">
+          <h2 class="label"><span class="icon">👥</span>Guests *</h2>
+          <div class="guest-grid">
+            <select id="guests" name="guests" required></select>
+            <input class="guest-custom" id="customGuests" name="customGuests" type="number" inputmode="numeric" min="11" max="99" placeholder="ระบุจำนวนแขก" />
           </div>
         </section>
 
-        <section class="section">
-          <div class="section-head">
-            <div class="section-title">Date & Time</div>
-            <div class="section-note">Roofmate เปิดทุกวัน</div>
-          </div>
-          <div class="grid-2">
-            <button class="date-button" id="dateButton" type="button">
-              <span>Date</span>
-              <b id="dateLabel"></b>
-            </button>
-            <div class="field">
-              <label>Time</label>
-              <div class="time-grid" id="timeGrid"></div>
-            </div>
-          </div>
+        <section class="field-card">
+          <h2 class="label"><span class="icon">☎</span>Phone Number *</h2>
+          <input id="phone" name="phone" inputmode="tel" autocomplete="tel" required placeholder="เบอร์โทรศัพท์" />
         </section>
 
-        <section class="section">
-          <div class="section-head">
-            <div class="section-title">Zone</div>
-            <div class="section-note">ลูกค้าเลือกโซน พนักงานเป็นคนจัดโต๊ะ</div>
-          </div>
-          <div class="chips" id="zoneGrid"></div>
-          <p class="zone-help">Table number will be assigned by Roofmate staff after checking availability.</p>
+        <section class="field-card">
+          <h2 class="label"><span class="icon">✉</span>Email</h2>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="อีเมล" />
         </section>
 
-        <section class="section">
-          <div class="field">
-            <label for="note">Note</label>
-            <textarea id="note" name="note" placeholder="Birthday, preferred area, special request"></textarea>
-          </div>
+        <section class="field-card">
+          <h2 class="label"><span class="icon">⌂</span>Zone *</h2>
+          <div class="zone-grid" id="zoneGrid"></div>
         </section>
 
-        <section class="submit-bar">
-          <button class="submit-btn" id="submitBtn" type="submit">Confirm Booking</button>
-          <div class="status" id="statusText"></div>
+        <section class="field-card">
+          <h2 class="label"><span class="icon">✎</span>Your Notes</h2>
+          <textarea id="note" name="note" placeholder="หมายเหตุเพิ่มเติม เช่น วันเกิด, โซนที่ต้องการ, ข้อความเพิ่มเติม"></textarea>
         </section>
+
+        <section class="field-card">
+          <h2 class="label"><span class="icon">📝</span>Our Notes</h2>
+          <ol class="note-list">
+            <li class="note-item">
+              <span class="note-no">1</span>
+              <span><strong>Smart casual attire is appreciated.</strong>แต่งกายให้สวยและหล่อก่อนออกจากบ้านนะครับ</span>
+            </li>
+            <li class="note-item">
+              <span class="note-no">2</span>
+              <span><strong>Please arrive by 8:30 PM.</strong>หากมาช้าเกิน 20.30 น. ทัก/โทรเข้ามาแจ้ง ถ้าไม่มีคิววอล์กอิน ทางร้านอาจล็อกโต๊ะไว้ได้ให้ครับ</span>
+            </li>
+            <li class="note-item">
+              <span class="note-no">3</span>
+              <span><strong>Your information will be kept confidential in accordance with the PDPA.</strong>ข้อมูลของท่านจะถูกเก็บเป็นความลับตามกฎหมาย PDPA ครับ</span>
+            </li>
+          </ol>
+          <label class="agree">
+            <input id="agree" type="checkbox" required />
+            <span><strong>Understood and agreed!</strong>รับทราบเงื่อนไขและยืนยันการจอง</span>
+          </label>
+        </section>
+
+        <button class="submit-btn" id="submitBtn" type="submit">Reserve Now</button>
+        <div class="status" id="statusText"></div>
       </form>
 
       <section class="success" id="successBox">
@@ -468,91 +492,71 @@
         <dl class="summary" id="successSummary"></dl>
       </section>
     </section>
-  </main>
 
-  <dialog id="dateDialog">
-    <div class="modal">
-      <div class="calendar-head">
-        <button class="icon-btn" id="prevMonthBtn" type="button">‹</button>
-        <div class="calendar-title" id="calendarTitle"></div>
-        <button class="icon-btn" id="nextMonthBtn" type="button">›</button>
-      </div>
-      <div class="calendar-grid" id="calendarGrid"></div>
-      <div class="modal-actions">
-        <button class="ghost" id="todayBtn" type="button">Today</button>
-        <button class="ghost" id="closeDateBtn" type="button">Close</button>
-      </div>
-    </div>
-  </dialog>
+    <section class="manage-panel" id="managePanel">
+      <h2>Manage Booking</h2>
+      <p>สำหรับแก้ไข ย้ายวัน หรือยกเลิก booking กรุณาติดต่อ Roofmate โดยแจ้งชื่อและเบอร์โทรที่ใช้จอง</p>
+      <a class="submit-btn" href="tel:0954546596" style="display:grid;place-items:center;text-decoration:none;">Call Roofmate</a>
+    </section>
+
+    <section class="contact">
+      <a href="tel:0954546596">☎ 095-454-6596</a>
+      <a href="https://www.instagram.com/roofmate.bkk" target="_blank" rel="noopener">IG @roofmate.bkk</a>
+      <a href="https://www.tiktok.com/@roofmate.bkk" target="_blank" rel="noopener">TikTok @roofmate.bkk</a>
+    </section>
+
+    <footer class="footer">
+      THANK YOU FOR CHOOSING <strong>ROOFMATE</strong><br />
+      WE LOOK FORWARD TO SERVING YOU
+    </footer>
+  </main>
 
   <script>
     const API_URL = "https://roofmate-api.roofmate-bangkok.workers.dev";
-    const TIME_OPTIONS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"];
-    const TABLE_ZONES = [
-      { zone: "Rooftop (Outdoor)", short: "Rooftop" },
-      { zone: "Level 3 (Aircon.)", short: "Level 3" },
-      { zone: "Level 2 (Aircon.)", short: "Level 2" },
+    const LIFF_ID = "";
+    const TIME_OPTIONS = ["19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"];
+    const ZONES = [
+      "Rooftop (Outdoor)",
+      "Level 3 (Aircon.)",
+      "Level 2 (Aircon.)",
     ];
 
     const state = {
-      date: bangkokDate(),
-      calendarMonth: bangkokDate().slice(0, 7),
       time: "20:00",
-      zone: TABLE_ZONES[0].zone,
+      zone: ZONES[0],
       submitting: false,
+      lineProfile: null,
     };
 
     const $ = (id) => document.getElementById(id);
-    const dateDialog = $("dateDialog");
 
     init();
 
     function init() {
-      renderGuests();
-      renderDateLabel();
+      $("date").min = bangkokDate();
+      $("date").value = bangkokDate();
       renderTimes();
       renderZones();
-      renderCalendar();
+      renderGuests();
+      initLine();
 
-      $("dateButton").addEventListener("click", () => {
-        state.calendarMonth = state.date.slice(0, 7);
-        renderCalendar();
-        dateDialog.showModal();
-      });
-      $("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
-      $("nextMonthBtn").addEventListener("click", () => changeMonth(1));
-      $("todayBtn").addEventListener("click", () => {
-        state.date = bangkokDate();
-        state.calendarMonth = state.date.slice(0, 7);
-        renderDateLabel();
-        renderCalendar();
-        dateDialog.close();
-      });
-      $("closeDateBtn").addEventListener("click", () => dateDialog.close());
+      $("bookTab").addEventListener("click", () => switchTab("book"));
+      $("manageTab").addEventListener("click", () => switchTab("manage"));
+      $("guests").addEventListener("change", renderGuestCustom);
       $("bookingForm").addEventListener("submit", submitBooking);
     }
 
-    function renderGuests() {
-      $("guests").innerHTML = Array.from({ length: 20 }, (_, index) => {
-        const value = index + 1;
-        return `<option value="${value}" ${value === 2 ? "selected" : ""}>${value} guest${value > 1 ? "s" : ""}</option>`;
-      }).join("");
-    }
-
-    function renderDateLabel() {
-      const date = parseDate(state.date);
-      $("dateLabel").textContent = new Intl.DateTimeFormat("en-GB", {
-        weekday: "short",
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(date);
+    function switchTab(tab) {
+      const isBook = tab === "book";
+      $("bookTab").classList.toggle("active", isBook);
+      $("manageTab").classList.toggle("active", !isBook);
+      $("bookPanel").style.display = isBook ? "block" : "none";
+      $("managePanel").classList.toggle("show", !isBook);
     }
 
     function renderTimes() {
       $("timeGrid").innerHTML = TIME_OPTIONS.map((time) => (
-        `<button class="time-chip ${state.time === time ? "active" : ""}" type="button" data-time="${time}">${time}</button>`
+        `<button class="choice ${state.time === time ? "active" : ""}" type="button" data-time="${time}">${formatTime(time)}</button>`
       )).join("");
       $("timeGrid").querySelectorAll("[data-time]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -563,8 +567,8 @@
     }
 
     function renderZones() {
-      $("zoneGrid").innerHTML = TABLE_ZONES.map((item) => (
-        `<button class="chip ${state.zone === item.zone ? "active" : ""}" type="button" data-zone="${escapeHtml(item.zone)}">${escapeHtml(item.short)}</button>`
+      $("zoneGrid").innerHTML = ZONES.map((zone) => (
+        `<button class="choice ${state.zone === zone ? "active" : ""}" type="button" data-zone="${escapeHtml(zone)}">${escapeHtml(zone).replace(" (", "<br>(")}</button>`
       )).join("");
       $("zoneGrid").querySelectorAll("[data-zone]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -574,47 +578,45 @@
       });
     }
 
-    function renderCalendar() {
-      const [year, month] = state.calendarMonth.split("-").map(Number);
-      const first = new Date(Date.UTC(year, month - 1, 1));
-      const days = daysInMonth(state.calendarMonth);
-      const offset = first.getUTCDay();
-      $("calendarTitle").textContent = new Intl.DateTimeFormat("en-GB", {
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-      }).format(first);
-
-      const cells = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => `<div class="dow">${day}</div>`);
-      for (let i = 0; i < offset; i += 1) cells.push(`<div class="day muted"></div>`);
-      const today = bangkokDate();
-      for (let day = 1; day <= days; day += 1) {
-        const date = `${state.calendarMonth}-${String(day).padStart(2, "0")}`;
-        const disabled = date < today;
-        const classes = [
-          "day",
-          date === state.date ? "selected" : "",
-          date === today ? "today" : "",
-          disabled ? "disabled" : "",
-        ].filter(Boolean).join(" ");
-        cells.push(`<button class="${classes}" type="button" data-date="${date}" ${disabled ? "disabled" : ""}>${day}</button>`);
-      }
-      $("calendarGrid").innerHTML = cells.join("");
-      $("calendarGrid").querySelectorAll("[data-date]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.date = button.dataset.date;
-          renderDateLabel();
-          renderCalendar();
-          dateDialog.close();
-        });
+    function renderGuests() {
+      const options = Array.from({ length: 10 }, (_, index) => {
+        const value = index + 1;
+        return `<option value="${value}" ${value === 2 ? "selected" : ""}>${value}</option>`;
       });
+      options.push(`<option value="custom">ระบุเอง</option>`);
+      $("guests").innerHTML = options.join("");
+      renderGuestCustom();
     }
 
-    function changeMonth(delta) {
-      const [year, month] = state.calendarMonth.split("-").map(Number);
-      const next = new Date(Date.UTC(year, month - 1 + delta, 1));
-      state.calendarMonth = next.toISOString().slice(0, 7);
-      renderCalendar();
+    function renderGuestCustom() {
+      const custom = $("guests").value === "custom";
+      $("customGuests").classList.toggle("show", custom);
+      $("customGuests").required = custom;
+      if (!custom) $("customGuests").value = "";
+    }
+
+    async function initLine() {
+      if (!LIFF_ID || !window.liff) {
+        setLineStatus(false);
+        return;
+      }
+      try {
+        await liff.init({ liffId: LIFF_ID });
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+        state.lineProfile = await liff.getProfile();
+        setLineStatus(true);
+      } catch (error) {
+        console.warn("LIFF init failed", error);
+        setLineStatus(false);
+      }
+    }
+
+    function setLineStatus(connected) {
+      $("lineStatus").classList.toggle("connected", connected);
+      $("lineStatusText").textContent = connected ? "connected" : "not connected";
     }
 
     async function submitBooking(event) {
@@ -625,34 +627,41 @@
       const submitBtn = $("submitBtn");
 
       if (!form.reportValidity()) return;
-      if (state.date < bangkokDate()) {
+      if ($("date").value < bangkokDate()) {
         statusText.className = "status error";
         statusText.textContent = "Please select today or a future date.";
         return;
       }
+
+      const guests = $("guests").value === "custom"
+        ? Number($("customGuests").value)
+        : Number($("guests").value);
+      if (!Number.isInteger(guests) || guests <= 0) {
+        statusText.className = "status error";
+        statusText.textContent = "Please enter a valid number of guests.";
+        return;
+      }
+
       state.submitting = true;
       submitBtn.disabled = true;
       statusText.className = "status";
       statusText.textContent = "Sending booking...";
 
-      const name = $("name").value.trim();
-      const phone = $("phone").value.trim();
-      const email = $("email").value.trim();
-      const guests = Number($("guests").value);
       const rawNote = $("note").value.trim();
       const zoneNote = `Preferred zone: ${state.zone}`;
       const customerNote = [zoneNote, rawNote].filter(Boolean).join("\n");
-
       const payload = {
-        name,
-        phone,
-        email: email || null,
+        name: $("name").value.trim(),
+        phone: $("phone").value.trim(),
+        email: $("email").value.trim() || null,
         guests,
-        booking_date: state.date,
+        booking_date: $("date").value,
         booking_time: state.time,
         table_no: null,
         customer_note: customerNote,
         status: "CF",
+        line_user_id: state.lineProfile?.userId || null,
+        line_display_name: state.lineProfile?.displayName || null,
       };
 
       try {
@@ -669,7 +678,9 @@
         statusText.textContent = "Booking confirmed.";
         renderSuccess(data, payload);
         form.reset();
+        $("date").value = bangkokDate();
         $("guests").value = "2";
+        renderGuestCustom();
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot create booking right now.";
@@ -686,7 +697,7 @@
         ["Booking Code", booking.booking_code || "-"],
         ["Name", customer.name || payload.name],
         ["Date", formatDate(payload.booking_date)],
-        ["Time", payload.booking_time],
+        ["Time", formatTime(payload.booking_time)],
         ["Guests", String(payload.guests)],
         ["Zone", state.zone],
         ["Table", "Staff will assign"],
@@ -707,24 +718,22 @@
       return `${data.year}-${data.month}-${data.day}`;
     }
 
-    function parseDate(value) {
-      const [year, month, day] = value.split("-").map(Number);
-      return new Date(Date.UTC(year, month - 1, day));
-    }
-
     function formatDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
       return new Intl.DateTimeFormat("en-GB", {
         weekday: "short",
         day: "2-digit",
         month: "short",
         year: "numeric",
         timeZone: "UTC",
-      }).format(parseDate(value));
+      }).format(new Date(Date.UTC(year, month - 1, day)));
     }
 
-    function daysInMonth(monthValue) {
-      const [year, month] = monthValue.split("-").map(Number);
-      return new Date(Date.UTC(year, month, 0)).getUTCDate();
+    function formatTime(value) {
+      const [hour, minute] = value.split(":").map(Number);
+      const suffix = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${String(minute).padStart(2, "0")} ${suffix}`;
     }
 
     function escapeHtml(value) {
