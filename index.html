@@ -48,13 +48,15 @@
     }
 
     .brand-hero {
-      min-height: clamp(130px, 17vh, 195px);
+      height: clamp(130px, 17vh, 195px);
+      min-height: 0;
       display: grid;
       place-items: center;
       text-align: center;
       color: var(--ink);
       padding: 10px 10px 8px;
-      overflow: visible;
+      overflow: hidden;
+      position: relative;
     }
 
     .brand-logo {
@@ -65,6 +67,10 @@
       object-fit: contain;
       object-position: center;
       margin: 0 auto;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .tabs {
@@ -175,19 +181,34 @@
     }
 
     input[type="date"] {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       appearance: none;
       -webkit-appearance: none;
       text-align: center;
       height: 62px;
-      line-height: normal;
+      line-height: 62px;
       padding: 0 16px;
       overflow: hidden;
     }
 
     input[type="date"]::-webkit-date-and-time-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      min-height: 1.2em;
+      height: 100%;
+      line-height: 1;
+    }
+
+    input[type="date"]::-webkit-datetime-edit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 0;
+      line-height: 1;
     }
 
     select {
@@ -490,14 +511,14 @@
 
     @media (max-width: 520px) {
       .page { padding-left: 12px; padding-right: 12px; }
-      .brand-hero { min-height: 118px; aspect-ratio: auto; padding: 8px 8px 6px; }
+      .brand-hero { height: 118px; min-height: 0; aspect-ratio: auto; padding: 8px 8px 6px; }
       .brand-logo { width: calc(100vw - 24px); max-width: 430px; }
       .tabs { gap: 10px; }
       .tab-btn { min-height: 60px; font-size: 14px; }
       .field-card { padding: 22px 20px; border-radius: 26px; }
       .label { font-size: 15px; letter-spacing: .16em; }
       input, select { height: 58px; min-height: 58px; border-radius: 20px; font-size: 16px; line-height: normal; }
-      input[type="date"] { height: 58px; min-height: 58px; font-size: 16px; padding: 0 14px; }
+      input[type="date"] { height: 58px; min-height: 58px; font-size: 16px; line-height: 58px; padding: 0 14px; }
       input[type="number"] { height: 58px; min-height: 58px; padding: 0 18px; }
       select { height: 58px; min-height: 58px; padding: 0 18px; }
       .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
