@@ -48,7 +48,7 @@
     }
 
     .brand-hero {
-      min-height: clamp(330px, 50vh, 500px);
+      min-height: clamp(390px, 56vh, 620px);
       display: grid;
       place-items: center;
       text-align: center;
@@ -57,8 +57,9 @@
     }
 
     .brand-logo {
-      width: clamp(240px, 34vw, 390px);
-      max-height: min(260px, 42vh);
+      width: clamp(520px, 58vw, 860px);
+      max-width: calc(100vw - 32px);
+      max-height: min(430px, 50vh);
       height: auto;
       display: block;
       object-fit: contain;
@@ -487,7 +488,7 @@
     @media (max-width: 520px) {
       .page { padding-left: 12px; padding-right: 12px; }
       .brand-hero { min-height: auto; aspect-ratio: 4 / 3; padding: 24px 10px; }
-      .brand-logo { width: min(380px, 86vw); max-height: 300px; }
+      .brand-logo { width: min(620px, 94vw); max-height: 360px; }
       .tabs { gap: 10px; }
       .tab-btn { min-height: 60px; font-size: 14px; }
       .field-card { padding: 22px 20px; border-radius: 26px; }
