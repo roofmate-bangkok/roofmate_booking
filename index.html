@@ -438,6 +438,23 @@
     }
     .booking-result.show { display: block; }
 
+    .edit-booking-form {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .edit-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .danger-btn {
+      background: linear-gradient(135deg, #7a1117, #3b0508);
+    }
+
     .notice-dialog {
       width: min(420px, calc(100% - 34px));
       border: 1px solid rgba(255,255,255,.16);
@@ -553,6 +570,7 @@
       .agree strong { font-size: 14px; letter-spacing: .08em; }
       .agree-thai { font-size: 12px; line-height: 1.25; }
       .email-note { font-size: 13px; align-items: flex-start; }
+      .edit-actions { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -709,6 +727,7 @@
       managing: false,
       lineProfile: null,
       lastConfirmedBooking: null,
+      currentManagedBooking: null,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -987,6 +1006,7 @@
         }
         statusText.className = "status ok";
         statusText.textContent = "Booking found.";
+        booking._lookupPhone = $("managePhone").value.trim();
         renderBookingResult(booking);
       } catch (error) {
         statusText.className = "status error";
@@ -999,21 +1019,119 @@
 
     function renderBookingResult(booking) {
       const customer = booking.customers || {};
+      const selectedZone = zoneFromBooking(booking) || ZONES[0];
+      state.currentManagedBooking = booking;
       $("bookingResult").innerHTML = `
         <dl class="summary">
           ${[
             ["Booking Code", booking.booking_code || "-"],
             ["Name", customer.name || "-"],
+            ["Phone", customer.phone || "-"],
+            ["Email", customer.email || "-"],
             ["Date", formatDate(booking.booking_date)],
             ["Guests", String(booking.guests || "-")],
+            ["Zone", selectedZone],
             ["Status", booking.status || "-"],
             ["Table", booking.table_no || "Staff will assign"],
           ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("")}
         </dl>
-        <p style="margin:16px 0 0;color:var(--muted);line-height:1.5;">หากต้องการแก้ไข ย้ายวัน หรือยกเลิก booking กรุณาติดต่อแอดมิน</p>
-        <a class="submit-btn" href="tel:0954546596" style="min-height:54px;margin-top:14px;display:grid;place-items:center;text-decoration:none;">Call Roofmate</a>
+        <form class="edit-booking-form" id="customerManageForm">
+          <input id="editBookingDate" type="date" required min="${escapeHtml(bangkokDate())}" value="${escapeHtml(booking.booking_date || bangkokDate())}" />
+          <input id="editName" required autocomplete="name" placeholder="ชื่อผู้จอง" value="${escapeHtml(customer.name || "")}" />
+          <select id="editZone" required>${renderZoneOptions(selectedZone)}</select>
+          <input id="editPhone" required inputmode="tel" autocomplete="tel" placeholder="เบอร์โทรศัพท์" value="${escapeHtml(customer.phone || "")}" />
+          <input id="editEmail" required type="email" autocomplete="email" placeholder="อีเมล" value="${escapeHtml(customer.email || "")}" />
+          <div class="edit-actions">
+            <button class="submit-btn" id="saveManageBtn" type="submit">Save Changes</button>
+            <button class="submit-btn danger-btn" id="cancelBookingBtn" type="button">Cancel Booking</button>
+          </div>
+        </form>
       `;
+      $("customerManageForm").addEventListener("submit", saveManagedBooking);
+      $("cancelBookingBtn").addEventListener("click", cancelManagedBooking);
       $("bookingResult").classList.add("show");
+    }
+
+    async function saveManagedBooking(event) {
+      event.preventDefault();
+      if (!state.currentManagedBooking) return;
+      const button = $("saveManageBtn");
+      const statusText = $("manageStatus");
+      button.disabled = true;
+      statusText.className = "status";
+      statusText.textContent = "Saving changes...";
+
+      try {
+        const booking = await patchManagedBooking({
+          booking_date: $("editBookingDate").value,
+          name: $("editName").value.trim(),
+          zone: $("editZone").value,
+          phone: $("editPhone").value.trim(),
+          email: $("editEmail").value.trim(),
+        });
+        booking._lookupPhone = $("editPhone").value.trim();
+        $("managePhone").value = $("editPhone").value.trim();
+        statusText.className = "status ok";
+        statusText.textContent = "Booking updated.";
+        renderBookingResult(booking);
+      } catch (error) {
+        statusText.className = "status error";
+        statusText.textContent = error.message || "Cannot update booking right now.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function cancelManagedBooking() {
+      if (!state.currentManagedBooking) return;
+      if (!confirm("Cancel this booking?")) return;
+      const button = $("cancelBookingBtn");
+      const statusText = $("manageStatus");
+      button.disabled = true;
+      statusText.className = "status";
+      statusText.textContent = "Cancelling booking...";
+
+      try {
+        const booking = await patchManagedBooking({ status: "CC" });
+        booking._lookupPhone = state.currentManagedBooking._lookupPhone;
+        statusText.className = "status ok";
+        statusText.textContent = "Booking cancelled.";
+        renderBookingResult(booking);
+      } catch (error) {
+        statusText.className = "status error";
+        statusText.textContent = error.message || "Cannot cancel booking right now.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function patchManagedBooking(changes) {
+      const booking = state.currentManagedBooking;
+      const response = await fetch(`${API_URL}/booking-manage`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          booking_id: booking.id,
+          current_phone: booking._lookupPhone || $("managePhone").value.trim(),
+          ...changes,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.ok === false) {
+        throw new Error(data?.error?.message || `HTTP ${response.status}`);
+      }
+      return data.booking;
+    }
+
+    function zoneFromBooking(booking) {
+      const match = String(booking.customer_note || "").match(/^Preferred zone:\s*(.+)$/m);
+      return match ? match[1].trim() : "";
+    }
+
+    function renderZoneOptions(selectedZone) {
+      return ZONES.map((zone) => (
+        `<option value="${escapeHtml(zone)}" ${zone === selectedZone ? "selected" : ""}>${escapeHtml(zone)}</option>`
+      )).join("");
     }
 
     function bangkokDate() {
