@@ -54,20 +54,12 @@
       padding: 24px 10px;
     }
 
-    .brand-title {
-      margin: 0;
-      font-size: clamp(38px, 13vw, 84px);
-      line-height: .9;
-      letter-spacing: -.055em;
-      font-weight: 950;
-    }
-
-    .brand-subtitle {
-      margin: 12px 0 0;
-      color: var(--ink);
-      font-size: clamp(15px, 4.4vw, 24px);
-      font-weight: 850;
-      letter-spacing: .03em;
+    .brand-logo {
+      width: min(520px, 74vw);
+      max-height: 138px;
+      height: auto;
+      display: block;
+      object-fit: contain;
     }
 
     .tabs {
@@ -510,10 +502,7 @@
 <body>
   <main class="page">
     <section class="brand-hero">
-      <div>
-        <h1 class="brand-title">Roofmate</h1>
-        <p class="brand-subtitle">เพื่อนร่วมหลังคา</p>
-      </div>
+      <img class="brand-logo" src="./roofmate-logo.png" alt="Roofmate" />
     </section>
 
     <nav class="tabs" aria-label="Booking tabs">
