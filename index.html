@@ -48,12 +48,12 @@
     }
 
     .brand-hero {
-      min-height: clamp(260px, 34vh, 390px);
+      min-height: clamp(130px, 17vh, 195px);
       display: grid;
       place-items: center;
       text-align: center;
       color: var(--ink);
-      padding: 22px 10px 18px;
+      padding: 10px 10px 8px;
       overflow: visible;
     }
 
@@ -191,7 +191,8 @@
     }
 
     select {
-      min-height: 72px;
+      height: 62px;
+      min-height: 62px;
       font-size: 20px;
       line-height: 1.25;
     }
@@ -489,15 +490,16 @@
 
     @media (max-width: 520px) {
       .page { padding-left: 12px; padding-right: 12px; }
-      .brand-hero { min-height: 235px; aspect-ratio: auto; padding: 16px 8px 12px; }
+      .brand-hero { min-height: 118px; aspect-ratio: auto; padding: 8px 8px 6px; }
       .brand-logo { width: calc(100vw - 24px); max-width: 430px; }
       .tabs { gap: 10px; }
       .tab-btn { min-height: 60px; font-size: 14px; }
       .field-card { padding: 22px 20px; border-radius: 26px; }
       .label { font-size: 15px; letter-spacing: .16em; }
-      input { min-height: 58px; border-radius: 20px; font-size: 16px; }
-      input[type="date"] { height: 58px; font-size: 16px; padding: 0 10px; }
-      select { min-height: 68px; border-radius: 20px; font-size: 19px; padding: 0 18px; }
+      input, select { height: 58px; min-height: 58px; border-radius: 20px; font-size: 16px; line-height: normal; }
+      input[type="date"] { height: 58px; min-height: 58px; font-size: 16px; padding: 0 14px; }
+      input[type="number"] { height: 58px; min-height: 58px; padding: 0 18px; }
+      select { height: 58px; min-height: 58px; padding: 0 18px; }
       .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
       .note-no { width: 42px; height: 42px; }
       .contact { gap: 10px; }
