@@ -8,8 +8,10 @@
   <style>
     :root {
       --red: #B8161E;
-      --red-2: #ee3a45;
+      --red-2: #c91d26;
       --red-3: #7e1016;
+      --ruby: #5f090e;
+      --ruby-2: #8a1118;
       --black: #050505;
       --ink: #0a0a0a;
       --panel: rgba(31, 7, 9, .78);
@@ -77,9 +79,9 @@
 
     .tab-btn {
       min-height: 68px;
-      border: 1px solid rgba(255,255,255,.26);
+      border: 1px solid rgba(255,255,255,.18);
       border-radius: 999px;
-      background: rgba(0,0,0,.32);
+      background: linear-gradient(180deg, rgba(130, 17, 24, .72), rgba(70, 5, 9, .86));
       color: var(--white);
       font-size: 17px;
       font-weight: 950;
@@ -89,8 +91,8 @@
     }
 
     .tab-btn.active {
-      background: linear-gradient(135deg, rgba(255, 190, 198, .96), var(--red-2));
-      border-color: rgba(255,255,255,.44);
+      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
+      border-color: rgba(255,255,255,.32);
       color: #fff;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 18px 36px rgba(0,0,0,.24);
     }
@@ -139,6 +141,7 @@
         rgba(35, 4, 7, .66);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 16px 28px rgba(0,0,0,.18);
       padding: 26px 28px;
+      overflow: hidden;
     }
 
     .label {
@@ -171,6 +174,7 @@
       outline: none;
       color-scheme: dark;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      font-size: 17px;
     }
 
     input[type="date"] {
@@ -178,6 +182,21 @@
       appearance: none;
       -webkit-appearance: none;
       text-align: center;
+      height: 62px;
+      line-height: normal;
+      padding: 0 16px;
+      overflow: hidden;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: center;
+      min-height: 1.2em;
+    }
+
+    select {
+      min-height: 72px;
+      font-size: 20px;
+      line-height: 1.25;
     }
 
     input::placeholder, textarea::placeholder { color: rgba(255,255,255,.42); }
@@ -224,7 +243,7 @@
       border-radius: 999px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, rgba(255,190,198,.98), var(--red-2));
+      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
       font-weight: 950;
     }
 
@@ -257,7 +276,29 @@
       width: 46px;
       height: 46px;
       min-height: 46px;
-      accent-color: var(--red-2);
+      appearance: none;
+      -webkit-appearance: none;
+      border: 2px solid rgba(255,255,255,.82);
+      border-radius: 999px;
+      background: rgba(255,255,255,.94);
+      padding: 0;
+      display: grid;
+      place-items: center;
+      box-shadow: none;
+    }
+
+    .agree input:checked {
+      border-color: #2fd66f;
+      background: #2fd66f;
+    }
+
+    .agree input:checked::after {
+      content: "";
+      width: 16px;
+      height: 9px;
+      border-left: 4px solid #fff;
+      border-bottom: 4px solid #fff;
+      transform: rotate(-45deg) translate(1px, -1px);
     }
 
     .agree strong {
@@ -273,7 +314,7 @@
       margin-top: 4px;
       border: 0;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(255, 190, 198, .98), var(--red-2));
+      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
       color: #fff;
       font-size: 18px;
       font-weight: 950;
@@ -285,6 +326,11 @@
     .submit-btn:disabled {
       opacity: .58;
       cursor: wait;
+    }
+
+    .submit-btn.ready {
+      background: linear-gradient(135deg, #31d875, #0b9f4f);
+      box-shadow: 0 22px 48px rgba(0, 0, 0, .28), 0 0 0 1px rgba(255,255,255,.14) inset;
     }
 
     .status {
@@ -391,7 +437,7 @@
       min-height: 48px;
       border: 0;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(255, 190, 198, .98), var(--red-2));
+      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
       color: #fff;
       padding: 0 28px;
       font-weight: 950;
@@ -417,19 +463,28 @@
       padding: 0 18px;
       border: 1px solid rgba(255,255,255,.16);
       border-radius: 999px;
-      background: rgba(255,255,255,.06);
+      background: linear-gradient(180deg, rgba(138, 17, 24, .72), rgba(95, 9, 14, .88));
       color: var(--white);
       text-decoration: none;
       font-weight: 800;
     }
 
+    .ig-icon {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+    }
+
     .footer {
       text-align: center;
-      color: rgba(255,247,242,.82);
-      font-weight: 750;
+      color: rgba(255,247,242,.48);
+      font-size: 12px;
+      font-weight: 500;
       letter-spacing: .05em;
       line-height: 1.7;
     }
+
+    .footer strong { font-weight: 500; }
 
     @media (max-width: 520px) {
       .page { padding-left: 12px; padding-right: 12px; }
@@ -437,7 +492,9 @@
       .tab-btn { min-height: 60px; font-size: 14px; }
       .field-card { padding: 22px 20px; border-radius: 26px; }
       .label { font-size: 15px; letter-spacing: .16em; }
-      input, select { min-height: 58px; border-radius: 20px; }
+      input { min-height: 58px; border-radius: 20px; font-size: 16px; }
+      input[type="date"] { height: 58px; font-size: 16px; padding: 0 10px; }
+      select { min-height: 68px; border-radius: 20px; font-size: 19px; padding: 0 18px; }
       .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
       .note-no { width: 42px; height: 42px; }
     }
@@ -489,7 +546,7 @@
 
         <section class="field-card">
           <h2 class="label"><span class="icon">✉</span>Email</h2>
-          <input id="email" name="email" type="email" autocomplete="email" placeholder="อีเมล" />
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="อีเมล" />
         </section>
 
         <section class="field-card">
@@ -524,7 +581,7 @@
           </label>
         </section>
 
-        <button class="submit-btn" id="submitBtn" type="submit">Reserve Now</button>
+        <button class="submit-btn" id="submitBtn" type="submit">Book Now</button>
         <div class="status" id="statusText"></div>
       </form>
 
@@ -547,9 +604,14 @@
     </section>
 
     <section class="contact">
-      <a href="tel:0954546596">☎ 095-454-6596</a>
-      <a href="https://www.instagram.com/roofmate.bkk" target="_blank" rel="noopener">IG @roofmate.bkk</a>
-      <a href="https://www.tiktok.com/@roofmate.bkk" target="_blank" rel="noopener">TikTok @roofmate.bkk</a>
+      <a href="https://www.instagram.com/roofmate.bkk" target="_blank" rel="noopener" aria-label="Roofmate Instagram">
+        <svg class="ig-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.1" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="2.2"/>
+          <circle cx="17.2" cy="6.8" r="1.25" fill="currentColor"/>
+        </svg>
+      </a>
+      <a href="https://maps.app.goo.gl/FrWSa6ez5Muw9Bvn6?g_st=ic" target="_blank" rel="noopener">Google Maps</a>
     </section>
 
     <footer class="footer">
@@ -599,11 +661,17 @@
       $("date").addEventListener("change", validateSelectedDate);
       $("zone").addEventListener("change", () => {
         state.zone = $("zone").value;
+        updateBookButtonState();
       });
       $("guests").addEventListener("change", renderGuestCustom);
       $("bookingForm").addEventListener("submit", submitBooking);
       $("manageForm").addEventListener("submit", findBooking);
       $("closedDialogBtn").addEventListener("click", () => $("closedDialog").close());
+      ["date", "name", "guests", "customGuests", "phone", "email", "zone", "agree"].forEach((id) => {
+        $(id).addEventListener("input", updateBookButtonState);
+        $(id).addEventListener("change", updateBookButtonState);
+      });
+      updateBookButtonState();
       setTimeout(validateSelectedDate, 250);
     }
 
@@ -637,6 +705,7 @@
       $("customGuests").classList.toggle("show", custom);
       $("customGuests").required = custom;
       if (!custom) $("customGuests").value = "";
+      updateBookButtonState();
     }
 
     async function initLine() {
@@ -694,11 +763,16 @@
     async function submitBooking(event) {
       event.preventDefault();
       if (state.submitting) return;
-      const form = $("bookingForm");
       const statusText = $("statusText");
       const submitBtn = $("submitBtn");
 
-      if (!form.reportValidity()) return;
+      const missing = firstMissingBookingField();
+      if (missing) {
+        focusField(missing);
+        missing.reportValidity();
+        updateBookButtonState();
+        return;
+      }
       if ($("date").value < bangkokDate()) {
         statusText.className = "status error";
         statusText.textContent = "Please select today or a future date.";
@@ -767,6 +841,27 @@
       }
     }
 
+    function firstMissingBookingField() {
+      const fields = [$("date"), $("name"), $("guests")];
+      if ($("guests").value === "custom") fields.push($("customGuests"));
+      fields.push($("phone"), $("email"), $("zone"), $("agree"));
+      return fields.find((field) => !field.checkValidity()) || null;
+    }
+
+    function isBookingFormReady() {
+      return !firstMissingBookingField() && !isSameDayBookingClosed($("date").value);
+    }
+
+    function updateBookButtonState() {
+      $("submitBtn").classList.toggle("ready", isBookingFormReady());
+    }
+
+    function focusField(field) {
+      const card = field.closest(".field-card") || field;
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => field.focus({ preventScroll: true }), 250);
+    }
+
     function renderSuccess(data, payload) {
       const booking = data.booking || {};
       const customer = data.customer || {};
@@ -777,7 +872,6 @@
         ["Guests", String(payload.guests)],
         ["Zone", state.zone],
         ["Table", "Staff will assign"],
-        ["Phone", customer.phone || payload.phone],
       ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
       $("successBox").classList.add("show");
       $("successBox").scrollIntoView({ behavior: "smooth", block: "start" });
