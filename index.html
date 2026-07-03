@@ -362,7 +362,7 @@
 
     .success {
       display: none;
-      margin-top: 18px;
+      margin-top: 0;
       border-radius: 30px;
       background: rgba(0,0,0,.58);
       padding: 22px;
@@ -370,6 +370,28 @@
     }
     .success.show { display: block; }
     .success h2 { margin: 0 0 14px; }
+
+    .email-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 0;
+      color: rgba(255,247,242,.86);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .email-note .icon {
+      font-size: 22px;
+      flex: 0 0 auto;
+    }
+
+    .manage-booking-btn {
+      margin-top: 18px;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+    }
 
     .summary {
       display: grid;
@@ -530,6 +552,7 @@
       .agree { grid-template-columns: 46px 1fr; gap: 14px; }
       .agree strong { font-size: 14px; letter-spacing: .08em; }
       .agree-thai { font-size: 12px; line-height: 1.25; }
+      .email-note { font-size: 13px; align-items: flex-start; }
     }
   </style>
 </head>
@@ -618,6 +641,11 @@
       <section class="success" id="successBox">
         <h2>Booking Confirmed</h2>
         <dl class="summary" id="successSummary"></dl>
+        <div class="email-note">
+          <span class="icon">✉</span>
+          <span>We have sent you a confirmation email. Please check your inbox.</span>
+        </div>
+        <button class="submit-btn manage-booking-btn" id="manageThisBookingBtn" type="button">Manage This Booking</button>
       </section>
     </section>
 
@@ -680,6 +708,7 @@
       submitting: false,
       managing: false,
       lineProfile: null,
+      lastConfirmedBooking: null,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -695,6 +724,7 @@
 
       $("bookTab").addEventListener("click", () => switchTab("book"));
       $("manageTab").addEventListener("click", () => switchTab("manage"));
+      $("manageThisBookingBtn").addEventListener("click", openConfirmedManage);
       $("date").addEventListener("change", validateSelectedDate);
       $("zone").addEventListener("change", () => {
         state.zone = $("zone").value;
@@ -718,6 +748,16 @@
       $("manageTab").classList.toggle("active", !isBook);
       $("bookPanel").style.display = isBook ? "block" : "none";
       $("managePanel").classList.toggle("show", !isBook);
+    }
+
+    function openConfirmedManage() {
+      if (state.lastConfirmedBooking) {
+        $("manageQuery").value = state.lastConfirmedBooking.bookingCode || "";
+        $("managePhone").value = state.lastConfirmedBooking.phone || "";
+      }
+      switchTab("manage");
+      $("managePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => $("manageQuery").focus({ preventScroll: true }), 250);
     }
 
     function renderZones() {
@@ -865,10 +905,6 @@
         statusText.className = "status ok";
         statusText.textContent = "Booking confirmed.";
         renderSuccess(data, payload);
-        form.reset();
-        $("date").value = bangkokDate();
-        $("guests").value = "2";
-        renderGuestCustom();
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot create booking right now.";
@@ -902,6 +938,11 @@
     function renderSuccess(data, payload) {
       const booking = data.booking || {};
       const customer = data.customer || {};
+      state.lastConfirmedBooking = {
+        bookingCode: booking.booking_code || "",
+        phone: payload.phone || "",
+      };
+      $("bookingForm").style.display = "none";
       $("successSummary").innerHTML = [
         ["Booking Code", booking.booking_code || "-"],
         ["Name", customer.name || payload.name],
