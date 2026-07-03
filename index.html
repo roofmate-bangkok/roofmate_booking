@@ -446,9 +446,8 @@
     }
 
     .contact {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin: 28px 0 18px;
       padding-top: 26px;
@@ -459,20 +458,25 @@
       min-height: 46px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 9px;
-      padding: 0 18px;
-      border: 1px solid rgba(255,255,255,.16);
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.1);
       border-radius: 999px;
-      background: linear-gradient(180deg, rgba(138, 17, 24, .72), rgba(95, 9, 14, .88));
-      color: var(--white);
+      background: rgba(38, 3, 6, .36);
+      color: rgba(255,247,242,.72);
       text-decoration: none;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 650;
+      white-space: nowrap;
     }
 
-    .ig-icon {
+    .ig-icon, .map-icon {
       width: 22px;
       height: 22px;
       display: inline-block;
+      flex: 0 0 auto;
+      opacity: .8;
     }
 
     .footer {
@@ -497,6 +501,9 @@
       select { min-height: 68px; border-radius: 20px; font-size: 19px; padding: 0 18px; }
       .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
       .note-no { width: 42px; height: 42px; }
+      .contact { gap: 10px; }
+      .contact a { min-height: 44px; font-size: 12px; padding: 0 10px; }
+      .ig-icon, .map-icon { width: 20px; height: 20px; }
     }
   </style>
 </head>
@@ -612,7 +619,13 @@
         </svg>
         @roofmate.bkk
       </a>
-      <a href="https://maps.app.goo.gl/FrWSa6ez5Muw9Bvn6?g_st=ic" target="_blank" rel="noopener">⌖ Google Maps</a>
+      <a href="https://maps.app.goo.gl/FrWSa6ez5Muw9Bvn6?g_st=ic" target="_blank" rel="noopener">
+        <svg class="map-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <circle cx="12" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        </svg>
+        Google Maps
+      </a>
     </section>
 
     <footer class="footer">
