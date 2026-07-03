@@ -48,7 +48,7 @@
     }
 
     .brand-hero {
-      height: clamp(130px, 17vh, 195px);
+      height: clamp(155px, 20vh, 210px);
       min-height: 0;
       display: grid;
       place-items: center;
@@ -60,7 +60,7 @@
     }
 
     .brand-logo {
-      width: clamp(430px, 42vw, 560px);
+      width: clamp(410px, 40vw, 520px);
       max-width: calc(100vw - 24px);
       height: auto;
       display: block;
@@ -69,7 +69,7 @@
       margin: 0 auto;
       position: absolute;
       left: 50%;
-      top: 50%;
+      top: 58%;
       transform: translate(-50%, -50%);
     }
 
@@ -126,7 +126,7 @@
     .panel {
       border: 1px solid rgba(255,255,255,.18);
       border-radius: 34px;
-      padding: 14px;
+      padding: 14px 14px 10px;
       background: rgba(255,255,255,.055);
       box-shadow: var(--shadow);
     }
@@ -353,7 +353,7 @@
     }
 
     .status {
-      min-height: 24px;
+      min-height: 0;
       color: var(--muted);
       text-align: center;
       font-size: 13px;
@@ -511,8 +511,8 @@
 
     @media (max-width: 520px) {
       .page { padding-left: 12px; padding-right: 12px; }
-      .brand-hero { height: 118px; min-height: 0; aspect-ratio: auto; padding: 8px 8px 6px; }
-      .brand-logo { width: calc(100vw - 24px); max-width: 430px; }
+      .brand-hero { height: 160px; min-height: 0; aspect-ratio: auto; padding: 8px 8px 4px; }
+      .brand-logo { width: calc(100vw - 48px); max-width: 380px; top: 60%; }
       .tabs { gap: 10px; }
       .tab-btn { min-height: 60px; font-size: 14px; }
       .field-card { padding: 22px 20px; border-radius: 26px; }
@@ -526,6 +526,9 @@
       .contact { gap: 10px; }
       .contact a { min-height: 44px; font-size: 12px; padding: 0 10px; }
       .ig-icon, .map-icon { width: 20px; height: 20px; }
+      .panel { padding-bottom: 8px; }
+      .submit-btn { margin-top: 0; }
+      .status:empty { display: none; }
     }
   </style>
 </head>
