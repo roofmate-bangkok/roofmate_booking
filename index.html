@@ -401,10 +401,21 @@
     }
 
     .success-card {
+      display: grid;
       border-radius: 30px;
       background: rgba(0,0,0,.58);
       padding: 22px;
       border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .success-card .summary { order: 1; }
+    .success-card .email-note { order: 2; }
+    .success-card .manage-booking-btn { order: 3; }
+    .success.is-cancelled .success-card .manage-booking-btn { order: 2; }
+    .success.is-cancelled .success-card .email-note {
+      order: 3;
+      justify-content: center;
+      text-align: center;
     }
 
     .email-note {
@@ -420,6 +431,10 @@
     .email-note .icon {
       font-size: 22px;
       flex: 0 0 auto;
+    }
+
+    .email-note .icon.is-hidden {
+      display: none;
     }
 
     .manage-booking-btn {
@@ -865,6 +880,10 @@
     }
 
     function openConfirmedManage() {
+      if ($("successBox").classList.contains("is-cancelled")) {
+        navigateTab("book");
+        return;
+      }
       if (state.lastConfirmedBooking) {
         $("manageQuery").value = state.lastConfirmedBooking.bookingCode || "";
         $("managePhone").value = state.lastConfirmedBooking.phone || "";
@@ -1068,7 +1087,10 @@
       $("successTitle").textContent = title;
       $("successCheck").classList.toggle("is-hidden", isCancelled);
       $("successMessage").textContent = successMessage(status);
-      $("manageThisBookingBtn").style.display = isCancelled ? "none" : "grid";
+      $("successBox").classList.toggle("is-cancelled", isCancelled);
+      $("successBox").querySelector(".email-note .icon").classList.toggle("is-hidden", isCancelled);
+      $("manageThisBookingBtn").textContent = isCancelled ? "Book Again" : "Manage This Booking";
+      $("manageThisBookingBtn").style.display = "grid";
       $("successSummary").innerHTML = [
         ["Booking Code", booking.booking_code || "-"],
         ["Name", customer.name || payload.name || "-"],
@@ -1164,6 +1186,15 @@
       $("bookingResult").querySelectorAll("[data-booking-index]").forEach((button) => {
         button.addEventListener("click", () => {
           const booking = state.manageResults[Number(button.dataset.bookingIndex)];
+          if (booking.status === "CC") {
+            renderSuccess(booking, {
+              phone: booking.customers?.phone || booking._lookupPhone || "",
+              email: booking.customers?.email || "",
+              booking_date: booking.booking_date || "",
+              zone: zoneFromBooking(booking) || "",
+            }, "cancelled");
+            return;
+          }
           renderBookingResult(booking);
         });
       });
@@ -1182,7 +1213,7 @@
             <div class="editable-row"><span>Phone</span><input class="summary-control" id="editPhone" required inputmode="tel" autocomplete="tel" value="${escapeHtml(customer.phone || "")}" /></div>
             <div class="editable-row"><span>Email</span><input class="summary-control" id="editEmail" required type="email" autocomplete="email" value="${escapeHtml(customer.email || "")}" /></div>
             <div class="editable-row"><span>Date</span><input class="summary-control" id="editBookingDate" type="date" required min="${escapeHtml(bangkokDate())}" value="${escapeHtml(booking.booking_date || bangkokDate())}" /></div>
-            <div><span>Guests</span><strong>${escapeHtml(String(booking.guests || "-"))}</strong></div>
+            <div class="editable-row"><span>Guests</span><input class="summary-control" id="editGuests" required type="number" inputmode="numeric" min="1" max="99" value="${escapeHtml(String(booking.guests || 2))}" /></div>
             <div class="editable-row"><span>Zone</span><select class="summary-control" id="editZone" required>${renderZoneOptions(selectedZone)}</select></div>
             <div><span>Status</span><strong>${escapeHtml(booking.status || "-")}</strong></div>
             <div><span>Table</span><strong>${escapeHtml(displayTableLabel(booking.table_no))}</strong></div>
@@ -1214,6 +1245,7 @@
       try {
         const booking = await patchManagedBooking({
           booking_date: $("editBookingDate").value,
+          guests: Number($("editGuests").value),
           name: $("editName").value.trim(),
           zone: $("editZone").value,
           phone: $("editPhone").value.trim(),
@@ -1228,6 +1260,7 @@
           phone: $("editPhone").value.trim(),
           email: $("editEmail").value.trim(),
           booking_date: $("editBookingDate").value,
+          guests: Number($("editGuests").value),
           zone: $("editZone").value,
         }, "updated");
       } catch (error) {
