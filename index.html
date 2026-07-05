@@ -363,13 +363,49 @@
     .success {
       display: none;
       margin-top: 0;
+    }
+    .success.show { display: block; }
+
+    .success-status {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      margin: 0 0 20px;
+      text-align: center;
+    }
+
+    .success-check {
+      width: 60px;
+      height: 60px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #31d875, #0b9f4f);
+      color: #fff;
+      font-size: 32px;
+      font-weight: 950;
+      box-shadow: 0 16px 34px rgba(0,0,0,.28), 0 0 0 8px rgba(49,216,117,.16);
+    }
+
+    .success-check.is-hidden {
+      display: none;
+    }
+
+    .success h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.15;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .success-card {
       border-radius: 30px;
       background: rgba(0,0,0,.58);
       padding: 22px;
       border: 1px solid rgba(255,255,255,.12);
     }
-    .success.show { display: block; }
-    .success h2 { margin: 0 0 14px; }
 
     .email-note {
       display: flex;
@@ -699,13 +735,18 @@
       </form>
 
       <section class="success" id="successBox">
-        <h2>Booking Confirmed</h2>
-        <dl class="summary" id="successSummary"></dl>
-        <div class="email-note">
-          <span class="icon">✉</span>
-          <span>Your booking details are saved. Please keep your booking code for Manage Booking.</span>
+        <div class="success-status">
+          <div class="success-check" id="successCheck">✓</div>
+          <h2 id="successTitle">Booking Confirmed</h2>
         </div>
-        <button class="submit-btn manage-booking-btn" id="manageThisBookingBtn" type="button">Manage This Booking</button>
+        <div class="success-card">
+          <dl class="summary" id="successSummary"></dl>
+          <div class="email-note">
+            <span class="icon">✉</span>
+            <span id="successMessage">Your booking is confirmed. A confirmation email will be sent shortly to the email address you provided.</span>
+          </div>
+          <button class="submit-btn manage-booking-btn" id="manageThisBookingBtn" type="button">Manage This Booking</button>
+        </div>
       </section>
     </section>
 
@@ -784,8 +825,8 @@
       renderGuests();
       initLine();
 
-      $("bookTab").addEventListener("click", () => switchTab("book"));
-      $("manageTab").addEventListener("click", () => switchTab("manage"));
+      $("bookTab").addEventListener("click", () => navigateTab("book"));
+      $("manageTab").addEventListener("click", () => navigateTab("manage"));
       $("manageThisBookingBtn").addEventListener("click", openConfirmedManage);
       $("date").addEventListener("change", validateSelectedDate);
       $("zone").addEventListener("change", () => {
@@ -802,6 +843,17 @@
       });
       updateBookButtonState();
       setTimeout(validateSelectedDate, 250);
+      switchTab(initialTab());
+    }
+
+    function initialTab() {
+      return new URLSearchParams(window.location.search).get("view") === "manage" ? "manage" : "book";
+    }
+
+    function navigateTab(tab) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("view", tab);
+      window.location.assign(url.toString());
     }
 
     function switchTab(tab) {
@@ -966,7 +1018,7 @@
         }
         statusText.className = "status ok";
         statusText.textContent = "Booking confirmed.";
-        renderSuccess(data, payload);
+        renderSuccess(data, payload, "confirmed");
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot create booking right now.";
@@ -997,27 +1049,54 @@
       setTimeout(() => field.focus({ preventScroll: true }), 250);
     }
 
-    function renderSuccess(data, payload) {
-      const booking = data.booking || {};
-      const customer = data.customer || {};
+    function renderSuccess(data, payload, status = "confirmed") {
+      const booking = data.booking || data || {};
+      const customer = data.customer || booking.customers || {};
+      const title = successTitle(status);
+      const isCancelled = status === "cancelled";
       state.lastConfirmedBooking = {
         bookingCode: booking.booking_code || "",
         phone: payload.phone || "",
         email: payload.email || "",
       };
       $("bookingForm").style.display = "none";
+      $("bookPanel").style.display = "block";
+      $("managePanel").classList.remove("show");
+      $("bookTab").classList.add("active");
+      $("manageTab").classList.remove("active");
+      window.history.replaceState({}, "", `${window.location.pathname}?view=book`);
+      $("successTitle").textContent = title;
+      $("successCheck").classList.toggle("is-hidden", isCancelled);
+      $("successMessage").textContent = successMessage(status);
+      $("manageThisBookingBtn").style.display = isCancelled ? "none" : "grid";
       $("successSummary").innerHTML = [
         ["Booking Code", booking.booking_code || "-"],
-        ["Name", customer.name || payload.name],
-        ["Phone", customer.phone || payload.phone],
+        ["Name", customer.name || payload.name || "-"],
+        ["Phone", customer.phone || payload.phone || "-"],
         ["Email", customer.email || payload.email || "-"],
-        ["Date", formatDate(payload.booking_date)],
-        ["Guests", String(payload.guests)],
-        ["Zone", state.zone],
-        ["Table", "Staff will assign"],
+        ["Date", formatDate(booking.booking_date || payload.booking_date)],
+        ["Guests", String(booking.guests || payload.guests || "-")],
+        ["Zone", zoneFromBooking(booking) || payload.zone || state.zone || "-"],
+        ["Table", displayTableLabel(booking.table_no)],
       ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
       $("successBox").classList.add("show");
       $("successBox").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function successTitle(status) {
+      if (status === "updated") return "Booking Updated";
+      if (status === "cancelled") return "Booking Cancelled";
+      return "Booking Confirmed";
+    }
+
+    function successMessage(status) {
+      if (status === "updated") {
+        return "Your booking has been updated. A confirmation email will be sent shortly to the email address you provided.";
+      }
+      if (status === "cancelled") {
+        return "This booking has been cancelled and can no longer be accessed or edited.";
+      }
+      return "Your booking is confirmed. A confirmation email will be sent shortly to the email address you provided.";
     }
 
     async function findBooking(event) {
@@ -1076,7 +1155,7 @@
               <button class="booking-card" type="button" data-booking-index="${index}">
                 <strong>${escapeHtml(booking.booking_code || "-")}</strong>
                 <span>${escapeHtml(customer.name || "-")} · ${escapeHtml(formatDate(booking.booking_date))} · ${escapeHtml(String(booking.guests || "-"))} guests</span>
-                <span>${escapeHtml(zone)} · ${escapeHtml(booking.status || "-")} · ${escapeHtml(booking.table_no || "Staff will assign")}</span>
+                <span>${escapeHtml(zone)} · ${escapeHtml(booking.status || "-")} · ${escapeHtml(displayTableLabel(booking.table_no))}</span>
               </button>
             `;
           }).join("")}
@@ -1106,7 +1185,7 @@
             <div><span>Guests</span><strong>${escapeHtml(String(booking.guests || "-"))}</strong></div>
             <div class="editable-row"><span>Zone</span><select class="summary-control" id="editZone" required>${renderZoneOptions(selectedZone)}</select></div>
             <div><span>Status</span><strong>${escapeHtml(booking.status || "-")}</strong></div>
-            <div><span>Table</span><strong>${escapeHtml(booking.table_no || "Staff will assign")}</strong></div>
+            <div><span>Table</span><strong>${escapeHtml(displayTableLabel(booking.table_no))}</strong></div>
           </dl>
           <div class="edit-actions">
             <button class="submit-btn" id="saveManageBtn" type="submit">Save Changes</button>
@@ -1145,7 +1224,12 @@
         $("managePhone").value = $("editPhone").value.trim();
         statusText.className = "status ok";
         statusText.textContent = "Booking updated.";
-        renderBookingResult(booking);
+        renderSuccess(booking, {
+          phone: $("editPhone").value.trim(),
+          email: $("editEmail").value.trim(),
+          booking_date: $("editBookingDate").value,
+          zone: $("editZone").value,
+        }, "updated");
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot update booking right now.";
@@ -1169,7 +1253,12 @@
         updateManagedBookingCache(booking);
         statusText.className = "status ok";
         statusText.textContent = "Booking cancelled.";
-        renderBookingResult(booking);
+        renderSuccess(booking, {
+          phone: booking.customers?.phone || state.currentManagedBooking?.customers?.phone || "",
+          email: booking.customers?.email || state.currentManagedBooking?.customers?.email || "",
+          booking_date: booking.booking_date || state.currentManagedBooking?.booking_date || "",
+          zone: zoneFromBooking(booking) || zoneFromBooking(state.currentManagedBooking) || "",
+        }, "cancelled");
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot cancel booking right now.";
@@ -1242,6 +1331,12 @@
     function zoneFromBooking(booking) {
       const match = String(booking.customer_note || "").match(/^Preferred zone:\s*(.+)$/m);
       return match ? match[1].trim() : "";
+    }
+
+    function displayTableLabel(tableNo) {
+      const value = String(tableNo || "").trim();
+      if (!value || value.toLowerCase() === "staff will assign") return "Assigned on Arrival";
+      return value;
     }
 
     function renderZoneOptions(selectedZone) {
