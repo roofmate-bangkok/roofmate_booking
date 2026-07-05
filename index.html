@@ -1086,6 +1086,7 @@
         button.addEventListener("click", () => {
           const booking = state.manageResults[Number(button.dataset.bookingIndex)];
           renderBookingResult(booking);
+          showEmailDeliveryWarning(booking);
         });
       });
       $("bookingResult").classList.add("show");
@@ -1144,7 +1145,7 @@
         updateManagedBookingCache(booking);
         $("managePhone").value = $("editPhone").value.trim();
         statusText.className = "status ok";
-        statusText.textContent = "Booking updated.";
+        statusText.textContent = "Booking updated. We have sent you a confirmation email.";
         renderBookingResult(booking);
       } catch (error) {
         statusText.className = "status error";
@@ -1168,7 +1169,7 @@
         booking._lookupPhone = state.currentManagedBooking._lookupPhone;
         updateManagedBookingCache(booking);
         statusText.className = "status ok";
-        statusText.textContent = "Booking cancelled.";
+        statusText.textContent = "Booking cancelled. We have sent you a confirmation email.";
         renderBookingResult(booking);
       } catch (error) {
         statusText.className = "status error";
@@ -1206,6 +1207,25 @@
         throw new Error(data?.error?.message || `HTTP ${response.status}`);
       }
       return data.booking;
+    }
+
+    function showEmailDeliveryWarning(booking) {
+      if (!emailNeedsAttention(booking)) return;
+      setTimeout(() => {
+        alert("ส่ง Email ไม่สำเร็จ กรุณาตรวจสอบที่อยู่ Email ของท่าน");
+        const emailInput = $("editEmail");
+        if (emailInput) {
+          emailInput.focus();
+          emailInput.select();
+        }
+      }, 120);
+    }
+
+    function emailNeedsAttention(booking) {
+      const status = booking?.email_status;
+      if (!status) return false;
+      if (status.ok === true || status.event_type === "confirmation_email_sent") return false;
+      return ["confirmation_email_failed", "confirmation_email_skipped"].includes(status.event_type);
     }
 
     function updateManagedBookingCache(booking) {
