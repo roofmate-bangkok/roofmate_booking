@@ -438,21 +438,62 @@
     }
     .booking-result.show { display: block; }
 
-    .edit-booking-form {
+    .booking-list {
       display: grid;
       gap: 12px;
-      margin-top: 16px;
+    }
+
+    .booking-card {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 22px;
+      background: rgba(35, 4, 7, .78);
+      color: var(--white);
+      padding: 16px;
+      text-align: left;
+      display: grid;
+      gap: 8px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .booking-card strong {
+      font-size: 17px;
+      letter-spacing: .04em;
+    }
+
+    .booking-card span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .summary .editable-row {
+      align-items: center;
+    }
+
+    .summary-control {
+      width: min(360px, 62%);
+      min-height: 44px;
+      height: 44px;
+      border-radius: 16px;
+      padding: 0 14px;
+      font-size: 15px;
+      text-align: right;
     }
 
     .edit-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 10px;
-      margin-top: 4px;
+      margin-top: 16px;
     }
 
     .danger-btn {
       background: linear-gradient(135deg, #7a1117, #3b0508);
+    }
+
+    .exit-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(0,0,0,.38));
     }
 
     .notice-dialog {
@@ -571,6 +612,7 @@
       .agree-thai { font-size: 12px; line-height: 1.25; }
       .email-note { font-size: 13px; align-items: flex-start; }
       .edit-actions { grid-template-columns: 1fr; }
+      .summary-control { width: 64%; font-size: 14px; }
     }
   </style>
 </head>
@@ -728,6 +770,7 @@
       lineProfile: null,
       lastConfirmedBooking: null,
       currentManagedBooking: null,
+      manageResults: [],
     };
 
     const $ = (id) => document.getElementById(id);
@@ -998,16 +1041,19 @@
         if (!response.ok || data.ok === false) {
           throw new Error(data?.error?.message || `HTTP ${response.status}`);
         }
-        const booking = data.bookings?.[0];
-        if (!booking) {
+        const bookings = data.bookings || [];
+        if (!bookings.length) {
           statusText.className = "status error";
           statusText.textContent = "Booking not found.";
           return;
         }
         statusText.className = "status ok";
-        statusText.textContent = "Booking found.";
-        booking._lookupPhone = $("managePhone").value.trim();
-        renderBookingResult(booking);
+        statusText.textContent = `${bookings.length} booking${bookings.length > 1 ? "s" : ""} found.`;
+        state.manageResults = bookings.map((booking) => ({
+          ...booking,
+          _lookupPhone: $("managePhone").value.trim(),
+        }));
+        renderBookingList(state.manageResults);
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot find booking right now.";
@@ -1017,44 +1063,66 @@
       }
     }
 
+    function renderBookingList(bookings) {
+      $("bookingResult").innerHTML = `
+        <div class="booking-list">
+          ${bookings.map((booking, index) => {
+            const customer = booking.customers || {};
+            const zone = zoneFromBooking(booking) || "-";
+            return `
+              <button class="booking-card" type="button" data-booking-index="${index}">
+                <strong>${escapeHtml(booking.booking_code || "-")}</strong>
+                <span>${escapeHtml(customer.name || "-")} · ${escapeHtml(formatDate(booking.booking_date))} · ${escapeHtml(String(booking.guests || "-"))} guests</span>
+                <span>${escapeHtml(zone)} · ${escapeHtml(booking.status || "-")} · ${escapeHtml(booking.table_no || "Staff will assign")}</span>
+              </button>
+            `;
+          }).join("")}
+        </div>
+      `;
+      $("bookingResult").querySelectorAll("[data-booking-index]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const booking = state.manageResults[Number(button.dataset.bookingIndex)];
+          renderBookingResult(booking);
+        });
+      });
+      $("bookingResult").classList.add("show");
+    }
+
     function renderBookingResult(booking) {
       const customer = booking.customers || {};
       const selectedZone = zoneFromBooking(booking) || ZONES[0];
       state.currentManagedBooking = booking;
       $("bookingResult").innerHTML = `
-        <dl class="summary">
-          ${[
-            ["Booking Code", booking.booking_code || "-"],
-            ["Name", customer.name || "-"],
-            ["Phone", customer.phone || "-"],
-            ["Email", customer.email || "-"],
-            ["Date", formatDate(booking.booking_date)],
-            ["Guests", String(booking.guests || "-")],
-            ["Zone", selectedZone],
-            ["Status", booking.status || "-"],
-            ["Table", booking.table_no || "Staff will assign"],
-          ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("")}
-        </dl>
-        <form class="edit-booking-form" id="customerManageForm">
-          <input id="editBookingDate" type="date" required min="${escapeHtml(bangkokDate())}" value="${escapeHtml(booking.booking_date || bangkokDate())}" />
-          <input id="editName" required autocomplete="name" placeholder="ชื่อผู้จอง" value="${escapeHtml(customer.name || "")}" />
-          <select id="editZone" required>${renderZoneOptions(selectedZone)}</select>
-          <input id="editPhone" required inputmode="tel" autocomplete="tel" placeholder="เบอร์โทรศัพท์" value="${escapeHtml(customer.phone || "")}" />
-          <input id="editEmail" required type="email" autocomplete="email" placeholder="อีเมล" value="${escapeHtml(customer.email || "")}" />
+        <form id="customerManageForm">
+          <dl class="summary">
+            <div><span>Booking Code</span><strong>${escapeHtml(booking.booking_code || "-")}</strong></div>
+            <div class="editable-row"><span>Name</span><input class="summary-control" id="editName" required autocomplete="name" value="${escapeHtml(customer.name || "")}" /></div>
+            <div class="editable-row"><span>Phone</span><input class="summary-control" id="editPhone" required inputmode="tel" autocomplete="tel" value="${escapeHtml(customer.phone || "")}" /></div>
+            <div class="editable-row"><span>Email</span><input class="summary-control" id="editEmail" required type="email" autocomplete="email" value="${escapeHtml(customer.email || "")}" /></div>
+            <div class="editable-row"><span>Date</span><input class="summary-control" id="editBookingDate" type="date" required min="${escapeHtml(bangkokDate())}" value="${escapeHtml(booking.booking_date || bangkokDate())}" /></div>
+            <div><span>Guests</span><strong>${escapeHtml(String(booking.guests || "-"))}</strong></div>
+            <div class="editable-row"><span>Zone</span><select class="summary-control" id="editZone" required>${renderZoneOptions(selectedZone)}</select></div>
+            <div><span>Status</span><strong>${escapeHtml(booking.status || "-")}</strong></div>
+            <div><span>Table</span><strong>${escapeHtml(booking.table_no || "Staff will assign")}</strong></div>
+          </dl>
           <div class="edit-actions">
             <button class="submit-btn" id="saveManageBtn" type="submit">Save Changes</button>
             <button class="submit-btn danger-btn" id="cancelBookingBtn" type="button">Cancel Booking</button>
+            <button class="submit-btn exit-btn" id="exitManageBtn" type="button">Exit</button>
           </div>
         </form>
       `;
       $("customerManageForm").addEventListener("submit", saveManagedBooking);
       $("cancelBookingBtn").addEventListener("click", cancelManagedBooking);
+      $("exitManageBtn").addEventListener("click", exitManagedBooking);
       $("bookingResult").classList.add("show");
     }
 
     async function saveManagedBooking(event) {
       event.preventDefault();
       if (!state.currentManagedBooking) return;
+      if (!$("customerManageForm").reportValidity()) return;
+      if (!confirm("Save changes to this booking?")) return;
       const button = $("saveManageBtn");
       const statusText = $("manageStatus");
       button.disabled = true;
@@ -1070,6 +1138,7 @@
           email: $("editEmail").value.trim(),
         });
         booking._lookupPhone = $("editPhone").value.trim();
+        updateManagedBookingCache(booking);
         $("managePhone").value = $("editPhone").value.trim();
         statusText.className = "status ok";
         statusText.textContent = "Booking updated.";
@@ -1084,7 +1153,7 @@
 
     async function cancelManagedBooking() {
       if (!state.currentManagedBooking) return;
-      if (!confirm("Cancel this booking?")) return;
+      if (!confirm("Are you sure you want to cancel this booking?")) return;
       const button = $("cancelBookingBtn");
       const statusText = $("manageStatus");
       button.disabled = true;
@@ -1094,6 +1163,7 @@
       try {
         const booking = await patchManagedBooking({ status: "CC" });
         booking._lookupPhone = state.currentManagedBooking._lookupPhone;
+        updateManagedBookingCache(booking);
         statusText.className = "status ok";
         statusText.textContent = "Booking cancelled.";
         renderBookingResult(booking);
@@ -1102,6 +1172,18 @@
         statusText.textContent = error.message || "Cannot cancel booking right now.";
       } finally {
         button.disabled = false;
+      }
+    }
+
+    function exitManagedBooking() {
+      state.currentManagedBooking = null;
+      if (state.manageResults.length) {
+        renderBookingList(state.manageResults);
+        $("manageStatus").className = "status ok";
+        $("manageStatus").textContent = `${state.manageResults.length} booking${state.manageResults.length > 1 ? "s" : ""} found.`;
+      } else {
+        $("bookingResult").classList.remove("show");
+        $("bookingResult").innerHTML = "";
       }
     }
 
@@ -1121,6 +1203,17 @@
         throw new Error(data?.error?.message || `HTTP ${response.status}`);
       }
       return data.booking;
+    }
+
+    function updateManagedBookingCache(booking) {
+      const index = state.manageResults.findIndex((item) => item.id === booking.id);
+      if (index >= 0) {
+        state.manageResults[index] = {
+          ...booking,
+          _lookupPhone: booking._lookupPhone || state.manageResults[index]._lookupPhone,
+        };
+      }
+      state.currentManagedBooking = booking;
     }
 
     function zoneFromBooking(booking) {
