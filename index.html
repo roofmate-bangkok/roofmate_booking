@@ -210,6 +210,12 @@
     }
 
     input::placeholder, textarea::placeholder { color: rgba(255,255,255,.42); }
+    input.soft-autofill {
+      color: rgba(255, 247, 242, .58);
+    }
+    input.soft-autofill:focus {
+      color: var(--white);
+    }
     input:focus, select:focus, textarea:focus {
       border-color: rgba(255, 185, 192, .72);
       box-shadow: 0 0 0 4px rgba(255, 255, 255, .08);
@@ -803,8 +809,9 @@
 
   <dialog class="notice-dialog" id="closedDialog">
     <div class="notice-body">
-      <h2 class="notice-title">กรุณาสำรองโต๊ะก่อนเวลา 17.00 ของวันที่จะเข้าใช้บริการ</h2>
+      <h2 class="notice-title">สำรองโต๊ะก่อน 17.00 น. ของวันที่จะเข้าใช้บริการเท่านั้น</h2>
       <p class="notice-subtitle">ต้องการความช่วยเหลือโปรดติดต่อแอดมิน</p>
+      <p class="notice-subtitle">Book before 5 PM on your visit date. Need help? Contact admin.</p>
       <button class="notice-close" id="closedDialogBtn" type="button">OK</button>
     </div>
   </dialog>
@@ -826,6 +833,7 @@
       lineProfile: null,
       lineIdToken: "",
       lineReady: false,
+      loadingLineCustomer: false,
       lastConfirmedBooking: null,
       currentManagedBooking: null,
       manageResults: [],
@@ -858,8 +866,10 @@
         $(id).addEventListener("input", updateBookButtonState);
         $(id).addEventListener("change", updateBookButtonState);
       });
+      ["name", "phone", "email"].forEach((id) => {
+        $(id).addEventListener("input", clearSoftAutofill);
+      });
       updateBookButtonState();
-      setTimeout(validateSelectedDate, 250);
       switchTab(initialTab());
     }
 
@@ -936,6 +946,8 @@
         state.lineIdToken = liff.getIDToken() || "";
         state.lineReady = Boolean(state.lineIdToken);
         setLineStatus(true);
+        autofillFromLineProfile();
+        loadLineCustomerProfile();
       } catch (error) {
         console.warn("LIFF init failed", error);
         setLineStatus(false);
@@ -954,6 +966,46 @@
       $("lineStatusText").textContent = connected ? "connected" : "disconnected";
     }
 
+    function autofillFromLineProfile() {
+      const displayName = state.lineProfile?.displayName || "";
+      softFill("name", displayName);
+    }
+
+    async function loadLineCustomerProfile() {
+      if (!state.lineReady || !state.lineIdToken || state.loadingLineCustomer) return;
+      state.loadingLineCustomer = true;
+      try {
+        const response = await fetch(`${API_URL}/line-customer`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ line_id_token: state.lineIdToken }),
+        });
+        const data = await response.json();
+        if (!response.ok || data.ok === false || !data.customer) return;
+        const customer = data.customer;
+        softFill("name", customer.name || customer.line_display_name || state.lineProfile?.displayName || "");
+        softFill("phone", customer.phone || "");
+        softFill("email", customer.email || "");
+        updateBookButtonState();
+      } catch (error) {
+        console.warn("Cannot load LINE customer profile", error);
+      } finally {
+        state.loadingLineCustomer = false;
+      }
+    }
+
+    function softFill(id, value) {
+      const input = $(id);
+      const text = String(value || "").trim();
+      if (!input || !text || input.value.trim()) return;
+      input.value = text;
+      input.classList.add("soft-autofill");
+    }
+
+    function clearSoftAutofill(event) {
+      event.currentTarget.classList.remove("soft-autofill");
+    }
+
     async function requireLineConnection() {
       if (!LIFF_ID || !window.liff) {
         throw new Error("Please open this booking page from LINE.");
@@ -968,11 +1020,7 @@
     }
 
     function validateSelectedDate() {
-      if (isSameDayBookingClosed($("date").value)) {
-        showClosedDialog();
-        return false;
-      }
-      return true;
+      return !isSameDayBookingClosed($("date").value);
     }
 
     function isSameDayBookingClosed(dateValue) {
@@ -1014,8 +1062,9 @@
         return;
       }
       if (!validateSelectedDate()) {
+        showClosedDialog();
         statusText.className = "status error";
-        statusText.textContent = "Same-day booking is closed after 17:00.";
+        statusText.textContent = "สำรองโต๊ะก่อน 17.00 น. ของวันที่จะเข้าใช้บริการเท่านั้น";
         return;
       }
       let lineIdToken = "";
@@ -1088,7 +1137,7 @@
     }
 
     function isBookingFormReady() {
-      return !firstMissingBookingField() && !isSameDayBookingClosed($("date").value) && state.lineReady;
+      return !firstMissingBookingField() && state.lineReady;
     }
 
     function updateBookButtonState() {
