@@ -4,37 +4,33 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Roofmate Booking</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     :root {
-      --red: #B8161E;
-      --red-2: #c91d26;
-      --red-3: #7e1016;
-      --ruby: #5f090e;
-      --ruby-2: #8a1118;
-      --black: #050505;
-      --ink: #0a0a0a;
-      --panel: rgba(31, 7, 9, .78);
-      --panel-2: rgba(0, 0, 0, .62);
-      --line: rgba(255, 255, 255, .16);
-      --white: #fff7f2;
-      --muted: rgba(255, 247, 242, .72);
-      --ok: #52d273;
-      --danger: #ffb0b0;
-      --radius: 28px;
-      --shadow: 0 28px 76px rgba(0, 0, 0, .34);
+      --bg: #09090a;
+      --panel: rgba(18, 18, 20, .78);
+      --panel-2: rgba(255, 255, 255, .055);
+      --line: rgba(255, 255, 255, .13);
+      --text: #f6f2ea;
+      --muted: rgba(246, 242, 234, .68);
+      --soft: rgba(246, 242, 234, .1);
+      --brand: #b8161e;
+      --brand-2: #e13a42;
+      --ok: #67d18c;
+      --warn: #f0bd5b;
+      --danger: #ff6b6b;
+      --radius: 18px;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .38);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; min-height: 100%; }
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--white);
+      color: var(--text);
       background:
-        radial-gradient(circle at 18% 8%, rgba(255, 255, 255, .12), transparent 30%),
-        radial-gradient(circle at 72% 22%, rgba(255, 255, 255, .035), transparent 28%),
-        linear-gradient(180deg, #c91d26 0%, #bd121c 46%, #a70c14 100%);
-      background-attachment: fixed;
+        radial-gradient(circle at 15% 2%, rgba(184, 22, 30, .36), transparent 24%),
+        radial-gradient(circle at 80% 0%, rgba(255, 255, 255, .08), transparent 20%),
+        linear-gradient(160deg, #101013 0%, #09090a 48%, #170709 100%);
       padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     }
 
@@ -44,300 +40,200 @@
     .page {
       width: min(760px, 100%);
       margin: 0 auto;
-      padding: 0 16px 34px;
+      padding: 18px 14px 42px;
     }
 
-    .brand-hero {
-      display: block;
-      text-align: center;
-      color: var(--ink);
-      padding: 0 0 10px;
-      overflow: visible;
-    }
-
-    .brand-logo {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-      object-position: center;
-      margin: 0 auto;
-    }
-
-    .tabs {
+    .hero {
+      min-height: 210px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      align-content: end;
       gap: 14px;
-      margin: 0 0 20px;
+      padding: 44px 6px 28px;
     }
 
-    .tab-btn {
-      min-height: 68px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(130, 17, 24, .72), rgba(70, 5, 9, .86));
-      color: var(--white);
-      font-size: 17px;
-      font-weight: 950;
-      letter-spacing: .2em;
+    .eyebrow {
+      color: var(--brand-2);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .18em;
       text-transform: uppercase;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 18px 34px rgba(0,0,0,.18);
     }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
-      border-color: rgba(255,255,255,.32);
-      color: #fff;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 18px 36px rgba(0,0,0,.24);
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 12vw, 82px);
+      line-height: .86;
+      letter-spacing: -.03em;
+      text-transform: uppercase;
     }
 
-    .line-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 34px;
-      padding: 0 14px;
-      margin-bottom: 18px;
-      border-radius: 999px;
-      background: rgba(0,0,0,.42);
+    .subtitle {
+      max-width: 520px;
+      margin: 0;
       color: var(--muted);
-      font-size: 13px;
-      font-weight: 750;
+      font-size: 15px;
+      line-height: 1.55;
     }
 
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: #777;
-    }
-    .line-status.connected .dot { background: var(--ok); }
-    .line-status.connected strong { color: var(--ok); }
-
-    .panel {
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 34px;
-      padding: 14px 14px 22px;
-      background: rgba(255,255,255,.055);
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.085), rgba(255,255,255,.025)),
+        var(--panel);
       box-shadow: var(--shadow);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      overflow: hidden;
     }
 
     .form {
       display: grid;
-      gap: 18px;
+      gap: 1px;
+      background: var(--line);
     }
 
-    .field-card {
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.055), transparent),
-        rgba(35, 4, 7, .66);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 16px 28px rgba(0,0,0,.18);
-      padding: 26px 28px;
-      overflow: hidden;
+    .section {
+      background: rgba(9, 9, 10, .72);
+      padding: 18px;
     }
 
-    .label {
+    .section-head {
       display: flex;
-      align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      margin: 0 0 16px;
-      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 12px;
       font-weight: 950;
-      letter-spacing: .18em;
+      letter-spacing: .13em;
       text-transform: uppercase;
     }
 
-    .label .icon {
-      width: 26px;
-      text-align: center;
-      letter-spacing: 0;
+    .section-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 10px;
+    }
+
+    .field:last-child { margin-bottom: 0; }
+    label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
 
     input, select, textarea {
       width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      min-height: 62px;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 22px;
-      background: rgba(4, 1, 2, .76);
-      color: var(--white);
-      padding: 0 22px;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .06);
+      color: var(--text);
+      padding: 0 14px;
       outline: none;
       color-scheme: dark;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-      font-size: 17px;
-    }
-
-    input[type="date"] {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      appearance: none;
-      -webkit-appearance: none;
-      text-align: center;
-      height: 62px;
-      line-height: 62px;
-      padding: 0 16px;
-      overflow: hidden;
-    }
-
-    input[type="date"]::-webkit-date-and-time-value {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      height: 100%;
-      line-height: 1;
-    }
-
-    input[type="date"]::-webkit-datetime-edit {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 0;
-      line-height: 1;
-    }
-
-    select {
-      height: 62px;
-      min-height: 62px;
-      font-size: 20px;
-      line-height: 1.25;
-    }
-
-    input::placeholder, textarea::placeholder { color: rgba(255,255,255,.42); }
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(255, 185, 192, .72);
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, .08);
     }
 
     textarea {
-      min-height: 150px;
-      padding: 18px 22px;
+      min-height: 92px;
       resize: vertical;
-      line-height: 1.5;
+      padding: 13px 14px;
+      line-height: 1.45;
     }
 
-    .guest-grid {
-      display: grid;
-      gap: 12px;
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(225, 58, 66, .82);
+      box-shadow: 0 0 0 3px rgba(184, 22, 30, .18);
     }
 
-    .guest-custom {
-      display: none;
-    }
-    .guest-custom.show { display: block; }
-
-    .note-list {
-      display: grid;
-      gap: 18px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .note-item {
-      display: grid;
-      grid-template-columns: 46px 1fr;
-      gap: 18px;
-      align-items: start;
+    .date-button {
+      width: 100%;
+      min-height: 54px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 0 14px;
+      text-align: left;
+      font-weight: 850;
     }
 
-    .note-no {
-      width: 46px;
-      height: 46px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
-      font-weight: 950;
-    }
-
-    .note-item strong {
+    .date-button span {
       display: block;
-      margin-bottom: 6px;
-      font-size: 17px;
-      line-height: 1.36;
-    }
-
-    .note-item span {
-      color: rgba(255,247,242,.86);
-      line-height: 1.55;
-    }
-
-    .agree {
-      display: grid;
-      grid-template-columns: 54px 1fr;
-      align-items: center;
-      gap: 18px;
-      margin-top: 24px;
-      padding: 18px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 30px;
-      background: rgba(4,1,2,.52);
-      cursor: pointer;
-    }
-
-    .agree input {
-      width: 46px;
-      height: 46px;
-      min-height: 46px;
-      appearance: none;
-      -webkit-appearance: none;
-      border: 2px solid rgba(255,255,255,.82);
-      border-radius: 999px;
-      background: rgba(255,255,255,.94);
-      padding: 0;
-      display: grid;
-      place-items: center;
-      box-shadow: none;
-    }
-
-    .agree input:checked {
-      border-color: #2fd66f;
-      background: #2fd66f;
-    }
-
-    .agree input:checked::after {
-      content: "";
-      width: 16px;
-      height: 9px;
-      border-left: 4px solid #fff;
-      border-bottom: 4px solid #fff;
-      transform: rotate(-45deg) translate(1px, -1px);
-    }
-
-    .agree strong {
-      display: block;
-      font-size: 16px;
-      letter-spacing: .1em;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .09em;
       text-transform: uppercase;
+      margin-bottom: 2px;
     }
 
-    .agree-thai {
-      display: block;
-      white-space: nowrap;
-      font-size: 14px;
-      line-height: 1.35;
+    .chips, .time-grid, .table-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .chips { grid-template-columns: repeat(3, 1fr); }
+    .time-grid { grid-template-columns: repeat(4, 1fr); }
+    .table-grid { grid-template-columns: repeat(5, 1fr); }
+
+    .chip, .time-chip, .table-chip {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.055);
+      color: var(--text);
+      padding: 0 10px;
+      font-weight: 850;
+    }
+
+    .chip.active, .time-chip.active, .table-chip.active {
+      border-color: var(--brand);
+      background: linear-gradient(135deg, var(--brand), #7f0e14);
+      box-shadow: 0 10px 24px rgba(184, 22, 30, .26);
+    }
+
+    .table-chip {
+      border-radius: 10px;
+      min-height: 40px;
+      font-size: 13px;
+    }
+
+    .submit-bar {
+      display: grid;
+      gap: 10px;
+      padding: 16px;
+      background: #0b0b0d;
     }
 
     .submit-btn {
-      width: 100%;
-      min-height: 74px;
-      margin-top: 4px;
+      min-height: 58px;
       border: 0;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
-      color: #fff;
-      font-size: 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f3f0e8, #d7d1c4);
+      color: #101013;
+      font-size: 15px;
       font-weight: 950;
-      letter-spacing: .18em;
+      letter-spacing: .08em;
       text-transform: uppercase;
-      box-shadow: 0 22px 48px rgba(0,0,0,.28);
     }
 
     .submit-btn:disabled {
@@ -345,57 +241,122 @@
       cursor: wait;
     }
 
-    .submit-btn.ready {
-      background: linear-gradient(135deg, #31d875, #0b9f4f);
-      box-shadow: 0 22px 48px rgba(0, 0, 0, .28), 0 0 0 1px rgba(255,255,255,.14) inset;
+    .status {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      text-align: center;
     }
 
-    .status {
-      min-height: 0;
-      color: var(--muted);
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .status.ok { color: var(--ok); }
     .status.error { color: var(--danger); }
+    .status.ok { color: var(--ok); }
+
+    dialog {
+      width: min(440px, calc(100% - 26px));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #111114;
+      color: var(--text);
+      padding: 0;
+    }
+
+    dialog::backdrop { background: rgba(0,0,0,.72); }
+    .modal { padding: 16px; }
+
+    .calendar-head {
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .calendar-title {
+      text-align: center;
+      font-weight: 950;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .icon-btn {
+      width: 42px;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--soft);
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .dow, .day {
+      min-height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+    }
+
+    .dow {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .day {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-weight: 850;
+    }
+
+    .day.muted { opacity: .24; }
+    .day.today { border-color: var(--warn); }
+    .day.selected {
+      background: var(--text);
+      color: #0d0d0f;
+      border-color: var(--text);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .ghost {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      padding: 0 14px;
+      font-weight: 850;
+    }
 
     .success {
       display: none;
-      margin-top: 0;
-      border-radius: 30px;
-      background: rgba(0,0,0,.58);
       padding: 22px;
-      border: 1px solid rgba(255,255,255,.12);
+      background: #0b0b0d;
+      border-top: 1px solid var(--line);
     }
+
     .success.show { display: block; }
-    .success h2 { margin: 0 0 14px; }
-
-    .email-note {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0 0;
-      color: rgba(255,247,242,.86);
-      line-height: 1.45;
-      font-size: 14px;
-    }
-
-    .email-note .icon {
-      font-size: 22px;
-      flex: 0 0 auto;
-    }
-
-    .manage-booking-btn {
-      margin-top: 18px;
-      display: grid;
-      place-items: center;
-      text-decoration: none;
+    .success h2 {
+      margin: 0 0 12px;
+      font-size: 24px;
+      line-height: 1.1;
     }
 
     .summary {
       display: grid;
-      gap: 10px;
+      gap: 8px;
       margin: 0;
       padding: 0;
     }
@@ -403,555 +364,307 @@
     .summary div {
       display: flex;
       justify-content: space-between;
-      gap: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,.1);
-      color: var(--muted);
-    }
-    .summary strong { color: var(--white); text-align: right; }
-
-    .manage-panel {
-      display: none;
-      border-radius: 34px;
-      padding: 28px;
-      background: rgba(35, 4, 7, .66);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: var(--shadow);
-    }
-    .manage-panel.show { display: block; }
-    .manage-panel h2 { margin: 0 0 12px; }
-    .manage-panel p { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
-
-    .manage-form {
-      display: grid;
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .booking-result {
-      display: none;
-      margin-top: 18px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 24px;
-      background: rgba(0,0,0,.44);
-      padding: 18px;
-    }
-    .booking-result.show { display: block; }
-
-    .booking-list {
-      display: grid;
       gap: 12px;
-    }
-
-    .booking-card {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 22px;
-      background: rgba(35, 4, 7, .78);
-      color: var(--white);
-      padding: 16px;
-      text-align: left;
-      display: grid;
-      gap: 8px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .booking-card strong {
-      font-size: 17px;
-      letter-spacing: .04em;
-    }
-
-    .booking-card span {
+      border-bottom: 1px solid rgba(255,255,255,.09);
+      padding: 9px 0;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
     }
 
-    .summary .editable-row {
-      align-items: center;
-    }
+    .summary strong { color: var(--text); text-align: right; }
 
-    .summary-control {
-      width: min(360px, 62%);
-      min-height: 44px;
-      height: 44px;
-      border-radius: 16px;
-      padding: 0 14px;
-      font-size: 15px;
-      text-align: right;
-    }
-
-    .edit-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .danger-btn {
-      background: linear-gradient(135deg, #7a1117, #3b0508);
-    }
-
-    .exit-btn {
-      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(0,0,0,.38));
-    }
-
-    .notice-dialog {
-      width: min(420px, calc(100% - 34px));
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 28px;
-      background: #120305;
-      color: var(--white);
-      padding: 0;
-      box-shadow: 0 28px 80px rgba(0,0,0,.42);
-    }
-
-    .notice-dialog::backdrop {
-      background: rgba(0,0,0,.72);
-    }
-
-    .notice-body {
-      padding: 26px;
-      text-align: center;
-    }
-
-    .notice-title {
-      margin: 0 0 12px;
-      font-size: 20px;
-      line-height: 1.42;
-      font-weight: 950;
-    }
-
-    .notice-subtitle {
-      margin: 0 0 20px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-      font-weight: 750;
-    }
-
-    .notice-close {
-      min-height: 48px;
-      border: 0;
-      border-radius: 999px;
-      background: linear-gradient(135deg, var(--ruby-2), var(--red-3));
-      color: #fff;
-      padding: 0 28px;
-      font-weight: 950;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    .contact {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin: 28px 0 18px;
-      padding-top: 26px;
-      border-top: 1px solid rgba(255,255,255,.14);
-    }
-
-    .contact a {
-      min-height: 46px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 0 14px;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 999px;
-      background: rgba(38, 3, 6, .36);
-      color: rgba(255,247,242,.72);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 650;
-      white-space: nowrap;
-    }
-
-    .ig-icon, .map-icon {
-      width: 22px;
-      height: 22px;
-      display: inline-block;
-      flex: 0 0 auto;
-      opacity: .8;
-    }
-
-    .footer {
-      text-align: center;
-      color: rgba(255,247,242,.48);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .05em;
-      line-height: 1.7;
-    }
-
-    .footer strong { font-weight: 500; }
-
-    @media (max-width: 520px) {
-      .page { padding-left: 12px; padding-right: 12px; }
-      .brand-hero { padding: 0 0 8px; }
-      .brand-logo { width: 100%; }
-      .tabs { gap: 10px; }
-      .tab-btn { min-height: 60px; font-size: 14px; }
-      .field-card { padding: 22px 20px; border-radius: 26px; }
-      .label { font-size: 15px; letter-spacing: .16em; }
-      input, select { height: 58px; min-height: 58px; border-radius: 20px; font-size: 16px; line-height: normal; }
-      input[type="date"] { height: 58px; min-height: 58px; font-size: 16px; line-height: 58px; padding: 0 14px; }
-      input[type="number"] { height: 58px; min-height: 58px; padding: 0 18px; }
-      select { height: 58px; min-height: 58px; padding: 0 18px; }
-      .note-item { grid-template-columns: 42px 1fr; gap: 14px; }
-      .note-no { width: 42px; height: 42px; }
-      .contact { gap: 10px; }
-      .contact a { min-height: 44px; font-size: 12px; padding: 0 10px; }
-      .ig-icon, .map-icon { width: 20px; height: 20px; }
-      .panel { padding-bottom: 24px; }
-      .submit-btn { margin-top: 0; }
-      .status:empty { display: none; }
-      .agree { grid-template-columns: 46px 1fr; gap: 14px; }
-      .agree strong { font-size: 14px; letter-spacing: .08em; }
-      .agree-thai { font-size: 12px; line-height: 1.25; }
-      .email-note { font-size: 13px; align-items: flex-start; }
-      .edit-actions { grid-template-columns: 1fr; }
-      .summary-control { width: 64%; font-size: 14px; }
+    @media (max-width: 620px) {
+      .page { padding-left: 10px; padding-right: 10px; }
+      .hero { min-height: 185px; padding-top: 32px; }
+      .section { padding: 15px; }
+      .grid-2, .chips { grid-template-columns: 1fr; }
+      .time-grid { grid-template-columns: repeat(3, 1fr); }
+      .table-grid { grid-template-columns: repeat(4, 1fr); }
+      .section-head { display: grid; }
+      .section-note { text-align: left; }
     }
   </style>
 </head>
 <body>
   <main class="page">
-    <section class="brand-hero">
-      <img class="brand-logo" src="./RMBookLogo.png" alt="Roofmate Booking" onerror="this.onerror=null;this.src='./RMBookingLogo.png';" />
+    <section class="hero">
+      <div class="eyebrow">Booking Request</div>
+      <h1>Roofmate</h1>
+      <p class="subtitle">จองโต๊ะล่วงหน้า กรอกข้อมูลให้ครบ แล้วระบบจะส่ง booking เข้า Staff App ทันที</p>
     </section>
 
-    <nav class="tabs" aria-label="Booking tabs">
-      <button class="tab-btn active" id="bookTab" type="button">Book</button>
-      <button class="tab-btn" id="manageTab" type="button">Manage</button>
-    </nav>
-
-    <div class="line-status" id="lineStatus">
-      <span class="dot"></span>
-      <span>LINE: <strong id="lineStatusText">disconnected</strong></span>
-    </div>
-
-    <section class="panel" id="bookPanel">
+    <section class="card">
       <form class="form" id="bookingForm" novalidate>
-        <section class="field-card">
-          <h2 class="label"><span class="icon">📅</span>Date *</h2>
-          <input id="date" name="date" type="date" required />
-        </section>
-
-        <section class="field-card">
-          <h2 class="label"><span class="icon">👤</span>Name *</h2>
-          <input id="name" name="name" autocomplete="name" required placeholder="ชื่อผู้จอง" />
-        </section>
-
-        <section class="field-card">
-          <h2 class="label"><span class="icon">👥</span>Guests *</h2>
-          <div class="guest-grid">
-            <select id="guests" name="guests" required></select>
-            <input class="guest-custom" id="customGuests" name="customGuests" type="number" inputmode="numeric" min="11" max="99" placeholder="ระบุจำนวนแขก" />
+        <section class="section">
+          <div class="section-head">
+            <div class="section-title">Your Detail</div>
+            <div class="section-note">ใช้สำหรับยืนยัน booking</div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" autocomplete="name" required placeholder="Your name" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" inputmode="tel" autocomplete="tel" required placeholder="08x xxx xxxx" />
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="name@email.com" />
+            </div>
+            <div class="field">
+              <label for="guests">Guests</label>
+              <select id="guests" name="guests" required></select>
+            </div>
           </div>
         </section>
 
-        <section class="field-card">
-          <h2 class="label"><span class="icon">☎</span>Phone Number *</h2>
-          <input id="phone" name="phone" inputmode="tel" autocomplete="tel" required placeholder="เบอร์โทรศัพท์" />
+        <section class="section">
+          <div class="section-head">
+            <div class="section-title">Date & Time</div>
+            <div class="section-note">Roofmate เปิดทุกวัน</div>
+          </div>
+          <div class="grid-2">
+            <button class="date-button" id="dateButton" type="button">
+              <span>Date</span>
+              <b id="dateLabel"></b>
+            </button>
+            <div class="field">
+              <label>Time</label>
+              <div class="time-grid" id="timeGrid"></div>
+            </div>
+          </div>
         </section>
 
-        <section class="field-card">
-          <h2 class="label"><span class="icon">✉</span>Email *</h2>
-          <input id="email" name="email" type="email" autocomplete="email" required placeholder="อีเมล" />
+        <section class="section">
+          <div class="section-head">
+            <div class="section-title">Zone & Table</div>
+            <div class="section-note">โต๊ะเป็น request, staff อาจปรับตามหน้างาน</div>
+          </div>
+          <div class="chips" id="zoneGrid"></div>
+          <div style="height: 12px"></div>
+          <div class="table-grid" id="tableGrid"></div>
         </section>
 
-        <section class="field-card">
-          <h2 class="label"><span class="icon">⌂</span>Zone *</h2>
-          <select id="zone" name="zone" required></select>
+        <section class="section">
+          <div class="field">
+            <label for="note">Note</label>
+            <textarea id="note" name="note" placeholder="Birthday, preferred area, special request"></textarea>
+          </div>
         </section>
 
-        <section class="field-card">
-          <h2 class="label"><span class="icon">✎</span>Your Notes</h2>
-          <textarea id="note" name="note" placeholder="หมายเหตุเพิ่มเติม เช่น วันเกิด, โซนที่ต้องการ, ข้อความเพิ่มเติม"></textarea>
+        <section class="submit-bar">
+          <button class="submit-btn" id="submitBtn" type="submit">Confirm Booking</button>
+          <div class="status" id="statusText"></div>
         </section>
-
-        <section class="field-card">
-          <h2 class="label"><span class="icon">📝</span>Our Notes</h2>
-          <ol class="note-list">
-            <li class="note-item">
-              <span class="note-no">1</span>
-              <span><strong>Smart casual attire is appreciated.</strong>แต่งกายให้สวยและหล่อก่อนออกจากบ้านนะครับ</span>
-            </li>
-            <li class="note-item">
-              <span class="note-no">2</span>
-              <span><strong>Please arrive by 7:30 PM, especially on weekends. Late arrivals may result in your table being released.</strong>โปรดมารับโต๊ะก่อน 19.30 น. โดยเฉพาะวันสุดสัปดาห์หากมาช้าโต๊ะอาจหลุดได้</span>
-            </li>
-            <li class="note-item">
-              <span class="note-no">3</span>
-              <span><strong>Your information will be kept confidential in accordance with the PDPA.</strong>ข้อมูลของท่านจะถูกเก็บเป็นความลับตามกฎหมาย PDPA ครับ</span>
-            </li>
-          </ol>
-          <label class="agree">
-            <input id="agree" type="checkbox" required />
-            <span><strong>Understood and agreed!</strong><span class="agree-thai">รับทราบเงื่อนไขและยืนยันการจอง</span></span>
-          </label>
-        </section>
-
-        <button class="submit-btn" id="submitBtn" type="submit">Book Now</button>
-        <div class="status" id="statusText"></div>
       </form>
 
       <section class="success" id="successBox">
         <h2>Booking Confirmed</h2>
         <dl class="summary" id="successSummary"></dl>
-        <div class="email-note">
-          <span class="icon">✉</span>
-          <span>We have sent you a confirmation email. Please check your inbox.</span>
-        </div>
-        <button class="submit-btn manage-booking-btn" id="manageThisBookingBtn" type="button">Manage This Booking</button>
       </section>
     </section>
-
-    <section class="manage-panel" id="managePanel">
-      <h2>Manage Booking</h2>
-      <p>กรอกเลข booking หรืออีเมล พร้อมเบอร์โทร เพื่อค้นหา booking ของคุณ</p>
-      <form class="manage-form" id="manageForm" novalidate>
-        <input id="manageQuery" autocomplete="off" required placeholder="Booking No. หรือ Email" />
-        <input id="managePhone" inputmode="tel" autocomplete="tel" required placeholder="เบอร์โทรศัพท์" />
-        <button class="submit-btn" id="manageBtn" type="submit">Find Booking</button>
-        <div class="status" id="manageStatus"></div>
-      </form>
-      <section class="booking-result" id="bookingResult"></section>
-    </section>
-
-    <section class="contact">
-      <a href="https://www.instagram.com/roofmate.bkk" target="_blank" rel="noopener" aria-label="Roofmate Instagram">
-        <svg class="ig-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.1" fill="none" stroke="currentColor" stroke-width="2.2"/>
-          <circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="2.2"/>
-          <circle cx="17.2" cy="6.8" r="1.25" fill="currentColor"/>
-        </svg>
-        @roofmate.bkk
-      </a>
-      <a href="https://maps.app.goo.gl/FrWSa6ez5Muw9Bvn6?g_st=ic" target="_blank" rel="noopener">
-        <svg class="map-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 21s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
-          <circle cx="12" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="2.2"/>
-        </svg>
-        Google Maps
-      </a>
-    </section>
-
-    <footer class="footer">
-      THANK YOU FOR CHOOSING <strong>ROOFMATE</strong><br />
-      WE LOOK FORWARD TO SERVING YOU
-    </footer>
   </main>
 
-  <dialog class="notice-dialog" id="closedDialog">
-    <div class="notice-body">
-      <h2 class="notice-title">กรุณาสำรองโต๊ะก่อนเวลา 17.00 ของวันที่จะเข้าใช้บริการ</h2>
-      <p class="notice-subtitle">ต้องการความช่วยเหลือโปรดติดต่อแอดมิน</p>
-      <button class="notice-close" id="closedDialogBtn" type="button">OK</button>
+  <dialog id="dateDialog">
+    <div class="modal">
+      <div class="calendar-head">
+        <button class="icon-btn" id="prevMonthBtn" type="button">‹</button>
+        <div class="calendar-title" id="calendarTitle"></div>
+        <button class="icon-btn" id="nextMonthBtn" type="button">›</button>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="modal-actions">
+        <button class="ghost" id="todayBtn" type="button">Today</button>
+        <button class="ghost" id="closeDateBtn" type="button">Close</button>
+      </div>
     </div>
   </dialog>
 
   <script>
     const API_URL = "https://roofmate-api.roofmate-bangkok.workers.dev";
-    const LIFF_ID = "";
-    const DEFAULT_BOOKING_TIME = "19:30";
-    const ZONES = [
-      "Rooftop (Outdoor)",
-      "Level 3 (Aircon.)",
-      "Level 2 (Aircon.)",
+    const TIME_OPTIONS = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"];
+    const TABLE_ZONES = [
+      { zone: "Rooftop (Outdoor)", short: "Rooftop", tables: ["60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","85","86","87","88","89","90","94","95","96","97","98","99","100"] },
+      { zone: "Level 3 (Aircon.)", short: "Level 3", tables: ["33","34","35","36","37","39","40","41","42","43","44","45","46","47","49","50","51","52","53","54","55"] },
+      { zone: "Level 2 (Aircon.)", short: "Level 2", tables: ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25"] },
     ];
 
     const state = {
-      zone: ZONES[0],
+      date: bangkokDate(),
+      calendarMonth: bangkokDate().slice(0, 7),
+      time: "20:00",
+      zone: TABLE_ZONES[0].zone,
+      table: "",
       submitting: false,
-      managing: false,
-      lineProfile: null,
-      lastConfirmedBooking: null,
-      currentManagedBooking: null,
-      manageResults: [],
     };
 
     const $ = (id) => document.getElementById(id);
+    const dateDialog = $("dateDialog");
 
     init();
 
     function init() {
-      $("date").min = bangkokDate();
-      $("date").value = bangkokDate();
-      renderZones();
       renderGuests();
-      initLine();
+      renderDateLabel();
+      renderTimes();
+      renderZones();
+      renderTables();
+      renderCalendar();
 
-      $("bookTab").addEventListener("click", () => switchTab("book"));
-      $("manageTab").addEventListener("click", () => switchTab("manage"));
-      $("manageThisBookingBtn").addEventListener("click", openConfirmedManage);
-      $("date").addEventListener("change", validateSelectedDate);
-      $("zone").addEventListener("change", () => {
-        state.zone = $("zone").value;
-        updateBookButtonState();
+      $("dateButton").addEventListener("click", () => {
+        state.calendarMonth = state.date.slice(0, 7);
+        renderCalendar();
+        dateDialog.showModal();
       });
-      $("guests").addEventListener("change", renderGuestCustom);
+      $("prevMonthBtn").addEventListener("click", () => changeMonth(-1));
+      $("nextMonthBtn").addEventListener("click", () => changeMonth(1));
+      $("todayBtn").addEventListener("click", () => {
+        state.date = bangkokDate();
+        state.calendarMonth = state.date.slice(0, 7);
+        renderDateLabel();
+        renderCalendar();
+        dateDialog.close();
+      });
+      $("closeDateBtn").addEventListener("click", () => dateDialog.close());
       $("bookingForm").addEventListener("submit", submitBooking);
-      $("manageForm").addEventListener("submit", findBooking);
-      $("closedDialogBtn").addEventListener("click", () => $("closedDialog").close());
-      ["date", "name", "guests", "customGuests", "phone", "email", "zone", "agree"].forEach((id) => {
-        $(id).addEventListener("input", updateBookButtonState);
-        $(id).addEventListener("change", updateBookButtonState);
-      });
-      updateBookButtonState();
-      setTimeout(validateSelectedDate, 250);
-    }
-
-    function switchTab(tab) {
-      const isBook = tab === "book";
-      $("bookTab").classList.toggle("active", isBook);
-      $("manageTab").classList.toggle("active", !isBook);
-      $("bookPanel").style.display = isBook ? "block" : "none";
-      $("managePanel").classList.toggle("show", !isBook);
-    }
-
-    function openConfirmedManage() {
-      if (state.lastConfirmedBooking) {
-        $("manageQuery").value = state.lastConfirmedBooking.bookingCode || "";
-        $("managePhone").value = state.lastConfirmedBooking.phone || "";
-      }
-      switchTab("manage");
-      $("managePanel").scrollIntoView({ behavior: "smooth", block: "start" });
-      setTimeout(() => $("manageQuery").focus({ preventScroll: true }), 250);
-    }
-
-    function renderZones() {
-      $("zone").innerHTML = ZONES.map((zone) => (
-        `<option value="${escapeHtml(zone)}" ${state.zone === zone ? "selected" : ""}>${escapeHtml(zone)}</option>`
-      )).join("");
-      $("zone").value = state.zone;
     }
 
     function renderGuests() {
-      const options = Array.from({ length: 10 }, (_, index) => {
+      $("guests").innerHTML = Array.from({ length: 20 }, (_, index) => {
         const value = index + 1;
-        return `<option value="${value}" ${value === 2 ? "selected" : ""}>${value}</option>`;
+        return `<option value="${value}" ${value === 2 ? "selected" : ""}>${value} guest${value > 1 ? "s" : ""}</option>`;
+      }).join("");
+    }
+
+    function renderDateLabel() {
+      const date = parseDate(state.date);
+      $("dateLabel").textContent = new Intl.DateTimeFormat("en-GB", {
+        weekday: "short",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(date);
+    }
+
+    function renderTimes() {
+      $("timeGrid").innerHTML = TIME_OPTIONS.map((time) => (
+        `<button class="time-chip ${state.time === time ? "active" : ""}" type="button" data-time="${time}">${time}</button>`
+      )).join("");
+      $("timeGrid").querySelectorAll("[data-time]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.time = button.dataset.time;
+          renderTimes();
+        });
       });
-      options.push(`<option value="custom">ระบุเอง</option>`);
-      $("guests").innerHTML = options.join("");
-      renderGuestCustom();
     }
 
-    function renderGuestCustom() {
-      const custom = $("guests").value === "custom";
-      $("customGuests").classList.toggle("show", custom);
-      $("customGuests").required = custom;
-      if (!custom) $("customGuests").value = "";
-      updateBookButtonState();
+    function renderZones() {
+      $("zoneGrid").innerHTML = TABLE_ZONES.map((item) => (
+        `<button class="chip ${state.zone === item.zone ? "active" : ""}" type="button" data-zone="${escapeHtml(item.zone)}">${escapeHtml(item.short)}</button>`
+      )).join("");
+      $("zoneGrid").querySelectorAll("[data-zone]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.zone = button.dataset.zone;
+          state.table = "";
+          renderZones();
+          renderTables();
+        });
+      });
     }
 
-    async function initLine() {
-      if (!LIFF_ID || !window.liff) {
-        setLineStatus(false);
-        return;
+    function renderTables() {
+      const zone = TABLE_ZONES.find((item) => item.zone === state.zone) || TABLE_ZONES[0];
+      const buttons = [
+        `<button class="table-chip ${state.table === "" ? "active" : ""}" type="button" data-table="">Any</button>`,
+        ...zone.tables.map((table) => (
+          `<button class="table-chip ${state.table === table ? "active" : ""}" type="button" data-table="${table}">${table}</button>`
+        )),
+      ];
+      $("tableGrid").innerHTML = buttons.join("");
+      $("tableGrid").querySelectorAll("[data-table]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.table = button.dataset.table;
+          renderTables();
+        });
+      });
+    }
+
+    function renderCalendar() {
+      const [year, month] = state.calendarMonth.split("-").map(Number);
+      const first = new Date(Date.UTC(year, month - 1, 1));
+      const days = daysInMonth(state.calendarMonth);
+      const offset = first.getUTCDay();
+      $("calendarTitle").textContent = new Intl.DateTimeFormat("en-GB", {
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC",
+      }).format(first);
+
+      const cells = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => `<div class="dow">${day}</div>`);
+      for (let i = 0; i < offset; i += 1) cells.push(`<div class="day muted"></div>`);
+      for (let day = 1; day <= days; day += 1) {
+        const date = `${state.calendarMonth}-${String(day).padStart(2, "0")}`;
+        const classes = [
+          "day",
+          date === state.date ? "selected" : "",
+          date === bangkokDate() ? "today" : "",
+        ].filter(Boolean).join(" ");
+        cells.push(`<button class="${classes}" type="button" data-date="${date}">${day}</button>`);
       }
-      try {
-        await liff.init({ liffId: LIFF_ID });
-        if (!liff.isLoggedIn()) {
-          liff.login();
-          return;
-        }
-        state.lineProfile = await liff.getProfile();
-        setLineStatus(true);
-      } catch (error) {
-        console.warn("LIFF init failed", error);
-        setLineStatus(false);
-      }
+      $("calendarGrid").innerHTML = cells.join("");
+      $("calendarGrid").querySelectorAll("[data-date]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.date = button.dataset.date;
+          renderDateLabel();
+          renderCalendar();
+          dateDialog.close();
+        });
+      });
     }
 
-    function setLineStatus(connected) {
-      $("lineStatus").classList.toggle("connected", connected);
-      $("lineStatusText").textContent = connected ? "connected" : "disconnected";
-    }
-
-    function validateSelectedDate() {
-      if (isSameDayBookingClosed($("date").value)) {
-        showClosedDialog();
-        return false;
-      }
-      return true;
-    }
-
-    function isSameDayBookingClosed(dateValue) {
-      if (!dateValue || dateValue !== bangkokDate()) return false;
-      const now = new Date();
-      const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Asia/Bangkok",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }).formatToParts(now);
-      const data = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-      const minutes = Number(data.hour) * 60 + Number(data.minute);
-      return minutes >= 17 * 60;
-    }
-
-    function showClosedDialog() {
-      const dialog = $("closedDialog");
-      if (dialog.open) return;
-      dialog.showModal();
+    function changeMonth(delta) {
+      const [year, month] = state.calendarMonth.split("-").map(Number);
+      const next = new Date(Date.UTC(year, month - 1 + delta, 1));
+      state.calendarMonth = next.toISOString().slice(0, 7);
+      renderCalendar();
     }
 
     async function submitBooking(event) {
       event.preventDefault();
       if (state.submitting) return;
+      const form = $("bookingForm");
       const statusText = $("statusText");
       const submitBtn = $("submitBtn");
 
-      const missing = firstMissingBookingField();
-      if (missing) {
-        focusField(missing);
-        missing.reportValidity();
-        updateBookButtonState();
-        return;
-      }
-      if ($("date").value < bangkokDate()) {
-        statusText.className = "status error";
-        statusText.textContent = "Please select today or a future date.";
-        return;
-      }
-      if (!validateSelectedDate()) {
-        statusText.className = "status error";
-        statusText.textContent = "Same-day booking is closed after 17:00.";
-        return;
-      }
-
-      const guests = $("guests").value === "custom"
-        ? Number($("customGuests").value)
-        : Number($("guests").value);
-      if (!Number.isInteger(guests) || guests <= 0) {
-        statusText.className = "status error";
-        statusText.textContent = "Please enter a valid number of guests.";
-        return;
-      }
-
+      if (!form.reportValidity()) return;
       state.submitting = true;
       submitBtn.disabled = true;
       statusText.className = "status";
       statusText.textContent = "Sending booking...";
 
+      const name = $("name").value.trim();
+      const phone = $("phone").value.trim();
+      const email = $("email").value.trim();
+      const guests = Number($("guests").value);
       const rawNote = $("note").value.trim();
       const zoneNote = `Preferred zone: ${state.zone}`;
-      const customerNote = [zoneNote, rawNote].filter(Boolean).join("\n");
+      const tableNote = state.table ? `Requested table: ${state.table}` : "Requested table: Any";
+      const customerNote = [zoneNote, tableNote, rawNote].filter(Boolean).join("\n");
+
       const payload = {
-        name: $("name").value.trim(),
-        phone: $("phone").value.trim(),
-        email: $("email").value.trim() || null,
+        name,
+        phone,
+        email: email || null,
         guests,
-        booking_date: $("date").value,
-        booking_time: DEFAULT_BOOKING_TIME,
-        table_no: null,
+        booking_date: state.date,
+        booking_time: state.time,
+        table_no: state.table || null,
         customer_note: customerNote,
         status: "CF",
-        line_user_id: state.lineProfile?.userId || null,
-        line_display_name: state.lineProfile?.displayName || null,
       };
 
       try {
@@ -967,6 +680,8 @@
         statusText.className = "status ok";
         statusText.textContent = "Booking confirmed.";
         renderSuccess(data, payload);
+        form.reset();
+        $("guests").value = "2";
       } catch (error) {
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot create booking right now.";
@@ -976,255 +691,21 @@
       }
     }
 
-    function firstMissingBookingField() {
-      const fields = [$("date"), $("name"), $("guests")];
-      if ($("guests").value === "custom") fields.push($("customGuests"));
-      fields.push($("phone"), $("email"), $("zone"), $("agree"));
-      return fields.find((field) => !field.checkValidity()) || null;
-    }
-
-    function isBookingFormReady() {
-      return !firstMissingBookingField() && !isSameDayBookingClosed($("date").value);
-    }
-
-    function updateBookButtonState() {
-      $("submitBtn").classList.toggle("ready", isBookingFormReady());
-    }
-
-    function focusField(field) {
-      const card = field.closest(".field-card") || field;
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => field.focus({ preventScroll: true }), 250);
-    }
-
     function renderSuccess(data, payload) {
       const booking = data.booking || {};
       const customer = data.customer || {};
-      state.lastConfirmedBooking = {
-        bookingCode: booking.booking_code || "",
-        phone: payload.phone || "",
-      };
-      $("bookingForm").style.display = "none";
       $("successSummary").innerHTML = [
         ["Booking Code", booking.booking_code || "-"],
         ["Name", customer.name || payload.name],
+        ["Phone", customer.phone || payload.phone],
+        ["Email", customer.email || payload.email || "-"],
         ["Date", formatDate(payload.booking_date)],
+        ["Time", payload.booking_time],
         ["Guests", String(payload.guests)],
-        ["Zone", state.zone],
-        ["Table", "Staff will assign"],
+        ["Table", payload.table_no || "Any"],
       ].map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
       $("successBox").classList.add("show");
       $("successBox").scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    async function findBooking(event) {
-      event.preventDefault();
-      if (state.managing) return;
-      const statusText = $("manageStatus");
-      const button = $("manageBtn");
-      const result = $("bookingResult");
-
-      if (!$("manageForm").reportValidity()) return;
-      state.managing = true;
-      button.disabled = true;
-      result.classList.remove("show");
-      statusText.className = "status";
-      statusText.textContent = "Searching booking...";
-
-      try {
-        const params = new URLSearchParams({
-          q: $("manageQuery").value.trim(),
-          phone: $("managePhone").value.trim(),
-        });
-        const response = await fetch(`${API_URL}/booking-lookup?${params.toString()}`);
-        const data = await response.json();
-        if (!response.ok || data.ok === false) {
-          throw new Error(data?.error?.message || `HTTP ${response.status}`);
-        }
-        const bookings = data.bookings || [];
-        if (!bookings.length) {
-          statusText.className = "status error";
-          statusText.textContent = "Booking not found.";
-          return;
-        }
-        statusText.className = "status ok";
-        statusText.textContent = `${bookings.length} booking${bookings.length > 1 ? "s" : ""} found.`;
-        state.manageResults = bookings.map((booking) => ({
-          ...booking,
-          _lookupPhone: $("managePhone").value.trim(),
-        }));
-        renderBookingList(state.manageResults);
-      } catch (error) {
-        statusText.className = "status error";
-        statusText.textContent = error.message || "Cannot find booking right now.";
-      } finally {
-        state.managing = false;
-        button.disabled = false;
-      }
-    }
-
-    function renderBookingList(bookings) {
-      $("bookingResult").innerHTML = `
-        <div class="booking-list">
-          ${bookings.map((booking, index) => {
-            const customer = booking.customers || {};
-            const zone = zoneFromBooking(booking) || "-";
-            return `
-              <button class="booking-card" type="button" data-booking-index="${index}">
-                <strong>${escapeHtml(booking.booking_code || "-")}</strong>
-                <span>${escapeHtml(customer.name || "-")} · ${escapeHtml(formatDate(booking.booking_date))} · ${escapeHtml(String(booking.guests || "-"))} guests</span>
-                <span>${escapeHtml(zone)} · ${escapeHtml(booking.status || "-")} · ${escapeHtml(booking.table_no || "Staff will assign")}</span>
-              </button>
-            `;
-          }).join("")}
-        </div>
-      `;
-      $("bookingResult").querySelectorAll("[data-booking-index]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const booking = state.manageResults[Number(button.dataset.bookingIndex)];
-          renderBookingResult(booking);
-        });
-      });
-      $("bookingResult").classList.add("show");
-    }
-
-    function renderBookingResult(booking) {
-      const customer = booking.customers || {};
-      const selectedZone = zoneFromBooking(booking) || ZONES[0];
-      state.currentManagedBooking = booking;
-      $("bookingResult").innerHTML = `
-        <form id="customerManageForm">
-          <dl class="summary">
-            <div><span>Booking Code</span><strong>${escapeHtml(booking.booking_code || "-")}</strong></div>
-            <div class="editable-row"><span>Name</span><input class="summary-control" id="editName" required autocomplete="name" value="${escapeHtml(customer.name || "")}" /></div>
-            <div class="editable-row"><span>Phone</span><input class="summary-control" id="editPhone" required inputmode="tel" autocomplete="tel" value="${escapeHtml(customer.phone || "")}" /></div>
-            <div class="editable-row"><span>Email</span><input class="summary-control" id="editEmail" required type="email" autocomplete="email" value="${escapeHtml(customer.email || "")}" /></div>
-            <div class="editable-row"><span>Date</span><input class="summary-control" id="editBookingDate" type="date" required min="${escapeHtml(bangkokDate())}" value="${escapeHtml(booking.booking_date || bangkokDate())}" /></div>
-            <div><span>Guests</span><strong>${escapeHtml(String(booking.guests || "-"))}</strong></div>
-            <div class="editable-row"><span>Zone</span><select class="summary-control" id="editZone" required>${renderZoneOptions(selectedZone)}</select></div>
-            <div><span>Status</span><strong>${escapeHtml(booking.status || "-")}</strong></div>
-            <div><span>Table</span><strong>${escapeHtml(booking.table_no || "Staff will assign")}</strong></div>
-          </dl>
-          <div class="edit-actions">
-            <button class="submit-btn" id="saveManageBtn" type="submit">Save Changes</button>
-            <button class="submit-btn danger-btn" id="cancelBookingBtn" type="button">Cancel Booking</button>
-            <button class="submit-btn exit-btn" id="exitManageBtn" type="button">Exit</button>
-          </div>
-        </form>
-      `;
-      $("customerManageForm").addEventListener("submit", saveManagedBooking);
-      $("cancelBookingBtn").addEventListener("click", cancelManagedBooking);
-      $("exitManageBtn").addEventListener("click", exitManagedBooking);
-      $("bookingResult").classList.add("show");
-    }
-
-    async function saveManagedBooking(event) {
-      event.preventDefault();
-      if (!state.currentManagedBooking) return;
-      if (!$("customerManageForm").reportValidity()) return;
-      if (!confirm("Save changes to this booking?")) return;
-      const button = $("saveManageBtn");
-      const statusText = $("manageStatus");
-      button.disabled = true;
-      statusText.className = "status";
-      statusText.textContent = "Saving changes...";
-
-      try {
-        const booking = await patchManagedBooking({
-          booking_date: $("editBookingDate").value,
-          name: $("editName").value.trim(),
-          zone: $("editZone").value,
-          phone: $("editPhone").value.trim(),
-          email: $("editEmail").value.trim(),
-        });
-        booking._lookupPhone = $("editPhone").value.trim();
-        updateManagedBookingCache(booking);
-        $("managePhone").value = $("editPhone").value.trim();
-        statusText.className = "status ok";
-        statusText.textContent = "Booking updated.";
-        renderBookingResult(booking);
-      } catch (error) {
-        statusText.className = "status error";
-        statusText.textContent = error.message || "Cannot update booking right now.";
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    async function cancelManagedBooking() {
-      if (!state.currentManagedBooking) return;
-      if (!confirm("Are you sure you want to cancel this booking?")) return;
-      const button = $("cancelBookingBtn");
-      const statusText = $("manageStatus");
-      button.disabled = true;
-      statusText.className = "status";
-      statusText.textContent = "Cancelling booking...";
-
-      try {
-        const booking = await patchManagedBooking({ status: "CC" });
-        booking._lookupPhone = state.currentManagedBooking._lookupPhone;
-        updateManagedBookingCache(booking);
-        statusText.className = "status ok";
-        statusText.textContent = "Booking cancelled.";
-        renderBookingResult(booking);
-      } catch (error) {
-        statusText.className = "status error";
-        statusText.textContent = error.message || "Cannot cancel booking right now.";
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    function exitManagedBooking() {
-      state.currentManagedBooking = null;
-      if (state.manageResults.length) {
-        renderBookingList(state.manageResults);
-        $("manageStatus").className = "status ok";
-        $("manageStatus").textContent = `${state.manageResults.length} booking${state.manageResults.length > 1 ? "s" : ""} found.`;
-      } else {
-        $("bookingResult").classList.remove("show");
-        $("bookingResult").innerHTML = "";
-      }
-    }
-
-    async function patchManagedBooking(changes) {
-      const booking = state.currentManagedBooking;
-      const response = await fetch(`${API_URL}/booking-manage`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          booking_id: booking.id,
-          current_phone: booking._lookupPhone || $("managePhone").value.trim(),
-          ...changes,
-        }),
-      });
-      const data = await response.json();
-      if (!response.ok || data.ok === false) {
-        throw new Error(data?.error?.message || `HTTP ${response.status}`);
-      }
-      return data.booking;
-    }
-
-    function updateManagedBookingCache(booking) {
-      const index = state.manageResults.findIndex((item) => item.id === booking.id);
-      if (index >= 0) {
-        state.manageResults[index] = {
-          ...booking,
-          _lookupPhone: booking._lookupPhone || state.manageResults[index]._lookupPhone,
-        };
-      }
-      state.currentManagedBooking = booking;
-    }
-
-    function zoneFromBooking(booking) {
-      const match = String(booking.customer_note || "").match(/^Preferred zone:\s*(.+)$/m);
-      return match ? match[1].trim() : "";
-    }
-
-    function renderZoneOptions(selectedZone) {
-      return ZONES.map((zone) => (
-        `<option value="${escapeHtml(zone)}" ${zone === selectedZone ? "selected" : ""}>${escapeHtml(zone)}</option>`
-      )).join("");
     }
 
     function bangkokDate() {
@@ -1238,22 +719,24 @@
       return `${data.year}-${data.month}-${data.day}`;
     }
 
-    function formatDate(value) {
+    function parseDate(value) {
       const [year, month, day] = value.split("-").map(Number);
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    function formatDate(value) {
       return new Intl.DateTimeFormat("en-GB", {
         weekday: "short",
         day: "2-digit",
         month: "short",
         year: "numeric",
         timeZone: "UTC",
-      }).format(new Date(Date.UTC(year, month - 1, day)));
+      }).format(parseDate(value));
     }
 
-    function formatTime(value) {
-      const [hour, minute] = value.split(":").map(Number);
-      const suffix = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour % 12 || 12;
-      return `${displayHour}:${String(minute).padStart(2, "0")} ${suffix}`;
+    function daysInMonth(monthValue) {
+      const [year, month] = monthValue.split("-").map(Number);
+      return new Date(Date.UTC(year, month, 0)).getUTCDate();
     }
 
     function escapeHtml(value) {
