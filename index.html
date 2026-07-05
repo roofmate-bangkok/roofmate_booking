@@ -703,7 +703,7 @@
         <dl class="summary" id="successSummary"></dl>
         <div class="email-note">
           <span class="icon">✉</span>
-          <span>We have sent you a confirmation email. Please check your inbox.</span>
+          <span>Your booking details are saved. Please keep your booking code for Manage Booking.</span>
         </div>
         <button class="submit-btn manage-booking-btn" id="manageThisBookingBtn" type="button">Manage This Booking</button>
       </section>
@@ -754,7 +754,7 @@
   </dialog>
 
   <script>
-    const API_URL = "https://roofmate-api.roofmate-bangkok.workers.dev";
+    const API_URL = "https://api.roofmatebkk.com";
     const LIFF_ID = "";
     const DEFAULT_BOOKING_TIME = "19:30";
     const ZONES = [
@@ -1086,7 +1086,6 @@
         button.addEventListener("click", () => {
           const booking = state.manageResults[Number(button.dataset.bookingIndex)];
           renderBookingResult(booking);
-          showEmailDeliveryWarning(booking);
         });
       });
       $("bookingResult").classList.add("show");
@@ -1145,7 +1144,7 @@
         updateManagedBookingCache(booking);
         $("managePhone").value = $("editPhone").value.trim();
         statusText.className = "status ok";
-        statusText.textContent = "Booking updated. We have sent you a confirmation email.";
+        statusText.textContent = "Booking updated.";
         renderBookingResult(booking);
       } catch (error) {
         statusText.className = "status error";
@@ -1169,7 +1168,7 @@
         booking._lookupPhone = state.currentManagedBooking._lookupPhone;
         updateManagedBookingCache(booking);
         statusText.className = "status ok";
-        statusText.textContent = "Booking cancelled. We have sent you a confirmation email.";
+        statusText.textContent = "Booking cancelled.";
         renderBookingResult(booking);
       } catch (error) {
         statusText.className = "status error";
@@ -1210,6 +1209,7 @@
     }
 
     function showEmailDeliveryWarning(booking) {
+      return;
       if (!emailNeedsAttention(booking)) return;
       setTimeout(() => {
         alert("ส่ง Email ไม่สำเร็จ กรุณาตรวจสอบที่อยู่ Email ของท่าน");
