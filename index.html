@@ -811,7 +811,7 @@
 
   <script>
     const API_URL = "https://api.roofmatebkk.com";
-    const LIFF_ID = "";
+    const LIFF_ID = "2010608989-N9NPdmGW";
     const DEFAULT_BOOKING_TIME = "19:30";
     const ZONES = [
       "Rooftop (Outdoor)",
@@ -824,6 +824,8 @@
       submitting: false,
       managing: false,
       lineProfile: null,
+      lineIdToken: "",
+      lineReady: false,
       lastConfirmedBooking: null,
       currentManagedBooking: null,
       manageResults: [],
@@ -921,6 +923,7 @@
     async function initLine() {
       if (!LIFF_ID || !window.liff) {
         setLineStatus(false);
+        updateBookButtonState();
         return;
       }
       try {
@@ -930,16 +933,38 @@
           return;
         }
         state.lineProfile = await liff.getProfile();
+        state.lineIdToken = liff.getIDToken() || "";
+        state.lineReady = Boolean(state.lineIdToken);
         setLineStatus(true);
       } catch (error) {
         console.warn("LIFF init failed", error);
         setLineStatus(false);
+      } finally {
+        updateBookButtonState();
       }
     }
 
     function setLineStatus(connected) {
+      if (!connected) {
+        state.lineProfile = null;
+        state.lineIdToken = "";
+        state.lineReady = false;
+      }
       $("lineStatus").classList.toggle("connected", connected);
       $("lineStatusText").textContent = connected ? "connected" : "disconnected";
+    }
+
+    async function requireLineConnection() {
+      if (!LIFF_ID || !window.liff) {
+        throw new Error("Please open this booking page from LINE.");
+      }
+      if (!state.lineReady) {
+        await initLine();
+      }
+      if (!state.lineReady || !state.lineIdToken) {
+        throw new Error("Please connect LINE before booking.");
+      }
+      return state.lineIdToken;
     }
 
     function validateSelectedDate() {
@@ -993,6 +1018,15 @@
         statusText.textContent = "Same-day booking is closed after 17:00.";
         return;
       }
+      let lineIdToken = "";
+      try {
+        lineIdToken = await requireLineConnection();
+      } catch (error) {
+        statusText.className = "status error";
+        statusText.textContent = error.message || "Please connect LINE before booking.";
+        updateBookButtonState();
+        return;
+      }
 
       const guests = $("guests").value === "custom"
         ? Number($("customGuests").value)
@@ -1021,8 +1055,7 @@
         table_no: null,
         customer_note: customerNote,
         status: "CF",
-        line_user_id: state.lineProfile?.userId || null,
-        line_display_name: state.lineProfile?.displayName || null,
+        line_id_token: lineIdToken,
       };
 
       try {
@@ -1055,7 +1088,7 @@
     }
 
     function isBookingFormReady() {
-      return !firstMissingBookingField() && !isSameDayBookingClosed($("date").value);
+      return !firstMissingBookingField() && !isSameDayBookingClosed($("date").value) && state.lineReady;
     }
 
     function updateBookButtonState() {
