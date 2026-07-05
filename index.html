@@ -816,6 +816,15 @@
     </div>
   </dialog>
 
+  <dialog class="notice-dialog" id="zoneFullDialog">
+    <div class="notice-body">
+      <h2 class="notice-title">โควต้าจองออนไลน์ของโซนนี้เต็มแล้ว</h2>
+      <p class="notice-subtitle">ยังสามารถ Walk in ได้ เรายังสำรองที่นั่งบางส่วนไว้ให้ลูกค้าหน้าร้าน</p>
+      <p class="notice-subtitle">Online bookings for this zone are full. Walk-ins are still welcome.</p>
+      <button class="notice-close" id="zoneFullDialogBtn" type="button">OK</button>
+    </div>
+  </dialog>
+
   <script>
     const API_URL = "https://api.roofmatebkk.com";
     const LIFF_ID = "2010608989-N9NPdmGW";
@@ -862,6 +871,7 @@
       $("bookingForm").addEventListener("submit", submitBooking);
       $("manageForm").addEventListener("submit", findBooking);
       $("closedDialogBtn").addEventListener("click", () => $("closedDialog").close());
+      $("zoneFullDialogBtn").addEventListener("click", () => $("zoneFullDialog").close());
       ["date", "name", "guests", "customGuests", "phone", "email", "zone", "agree"].forEach((id) => {
         $(id).addEventListener("input", updateBookButtonState);
         $(id).addEventListener("change", updateBookButtonState);
@@ -1043,6 +1053,12 @@
       dialog.showModal();
     }
 
+    function showZoneFullDialog() {
+      const dialog = $("zoneFullDialog");
+      if (dialog.open) return;
+      dialog.showModal();
+    }
+
     async function submitBooking(event) {
       event.preventDefault();
       if (state.submitting) return;
@@ -1115,12 +1131,20 @@
         });
         const data = await response.json();
         if (!response.ok || data.ok === false) {
-          throw new Error(data?.error?.message || `HTTP ${response.status}`);
+          const error = new Error(data?.error?.message || `HTTP ${response.status}`);
+          error.code = data?.error?.code || "";
+          throw error;
         }
         statusText.className = "status ok";
         statusText.textContent = "Booking confirmed.";
         renderSuccess(data, payload, "confirmed");
       } catch (error) {
+        if (error.code === "ZONE_ONLINE_FULL") {
+          showZoneFullDialog();
+          statusText.className = "status error";
+          statusText.textContent = "โควต้าจองออนไลน์ของโซนนี้เต็มแล้ว";
+          return;
+        }
         statusText.className = "status error";
         statusText.textContent = error.message || "Cannot create booking right now.";
       } finally {
